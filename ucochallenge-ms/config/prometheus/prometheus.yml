@@ -1,0 +1,42 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'api-gateway'
+    static_configs:
+      - targets: ['host.docker.internal:8082']
+
+  - job_name: 'nginx'
+    scrape_interval: 15s
+    static_configs:
+      - targets: ['host.docker.internal:9113']
+
+  - job_name: 'backend'
+    scrape_interval: 15s
+    static_configs:
+      - targets: ['host.docker.internal:8083']
+
+  - job_name: 'messages-service'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['host.docker.internal:8081']
+
+  - job_name: 'parameters-service'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['host.docker.internal:8080']
+
+  - job_name: 'uco-challenge-apigateway'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['host.docker.internal:8082']
+
+  - job_name: 'uco-challenge-backend'
+    scheme: http
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['host.docker.internal:8083']
