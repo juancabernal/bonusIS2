@@ -95,11 +95,15 @@ public class SecurityConfig {
     // ✅ CORS heredado desde application.properties
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedOrigin("http://localhost:5174");
+        config.addAllowedMethod("*");
+        config.addAllowedHeader("*");
+        config.setAllowCredentials(true);
+        config.addExposedHeader("Authorization");
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        Map<String, CorsConfiguration> corsConfigurations = globalCorsProperties.getCorsConfigurations();
-        if (corsConfigurations != null) {
-            corsConfigurations.forEach(source::registerCorsConfiguration);
-        }
+        source.registerCorsConfiguration("/**", config);
         return source;
     }
 
