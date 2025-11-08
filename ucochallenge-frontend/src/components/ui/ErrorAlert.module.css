@@ -1,0 +1,56 @@
+.alert {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  border-radius: 18px;
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  background: linear-gradient(135deg, rgba(248, 113, 113, 0.14), rgba(252, 165, 165, 0.18));
+  padding: 1.25rem 1.5rem;
+  color: #991b1b;
+  box-shadow: 0 18px 28px rgba(248, 113, 113, 0.2);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+}
+
+.icon {
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(254, 226, 226, 0.75);
+  color: #dc2626;
+  font-weight: 700;
+}
+
+.content {
+  flex: 1;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.message {
+  margin: 0.35rem 0 0;
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.alert :global(button),
+.alert :global(.btn) {
+  border-radius: 12px;
+}
