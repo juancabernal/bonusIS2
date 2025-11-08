@@ -1,92 +1,85 @@
 import { Link } from 'react-router-dom'
 import { useAuth0 } from '@auth0/auth0-react'
 import LogoutButton from '../components/LogoutButton'
+import styles from './Dashboard.module.css'
 
 const Dashboard = () => {
   const { user } = useAuth0()
   const displayName = user?.name ?? user?.email ?? 'Usuario'
 
   return (
-    <main className="page dashboard-page">
-      <header className="page-header">
-        <div>
-          <h1>Panel de control</h1>
+    <main className={`page ${styles.dashboard}`}>
+      <header className={styles.header}>
+        <div className={styles.headerText}>
+          <h1>Panel operativo</h1>
           <p>
-            Visualiza la salud operativa de Uco Challenge y accede rápidamente a los flujos críticos del
-            ecosistema.
+            Supervisa la actividad del ecosistema UCO y accede a las acciones clave para mantener datos y
+            verificaciones alineadas.
           </p>
         </div>
-        <div className="page-actions">
-          <Link to="/users/new" className="btn btn-accent">
-            Registrar nuevo usuario
+        <div className={styles.headerActions}>
+          <Link to="/users/new" className="button button--primary">
+            Registrar usuario
           </Link>
-          <LogoutButton className="btn btn-secondary" />
+          <LogoutButton className="button button--ghost" />
         </div>
       </header>
 
-      <section className="card-grid" style={{ marginBottom: '2.5rem' }}>
-        <article className="card card--accent">
-          <span className="badge" aria-label="Cuenta activa">
-            ✅ Sesión activa
+      <section className={styles.metrics}>
+        <article className={styles.metricCard}>
+          <span className={styles.metricBadge}>Sesión activa</span>
+          <strong>{displayName}</strong>
+          <p>Tu sesión Auth0 está vigente y lista para interactuar con el API Gateway.</p>
+        </article>
+        <article className={styles.metricCard}>
+          <span className={styles.metricBadge} style={{ borderColor: 'rgba(108, 99, 255, 0.35)', background: 'rgba(108, 99, 255, 0.12)', color: '#c7d2fe' }}>
+            Usuarios
           </span>
-          <h2 style={{ marginBottom: '0.75rem' }}>Hola, {displayName}</h2>
-          <p>
-            Tu sesión Auth0 está sincronizada y lista para administrar usuarios, validaciones y catálogos
-            oficiales desde un solo lugar.
-          </p>
+          <strong>—</strong>
+          <p>Consulta el detalle completo en la vista de usuarios y aplica filtros inmediatos.</p>
         </article>
-
-        <article className="card" style={{ background: 'rgba(59, 130, 246, 0.18)' }}>
-          <span className="metric-title">Usuarios totales</span>
-          <p className="metric-value">—</p>
-          <p style={{ margin: 0 }}>
-            Consulta el detalle completo en la vista de usuarios para acceder a verificaciones y acciones
-            rápidas.
-          </p>
-        </article>
-
-        <article className="card" style={{ background: 'rgba(56, 189, 248, 0.18)' }}>
-          <span className="metric-title">Contactos verificados</span>
-          <p className="metric-value">—</p>
-          <p style={{ margin: 0 }}>
-            Mantén correos y móviles confiables con el flujo de código OTP integrado en el sistema.
-          </p>
+        <article className={styles.metricCard}>
+          <span className={styles.metricBadge} style={{ borderColor: 'rgba(250, 204, 21, 0.3)', background: 'rgba(250, 204, 21, 0.12)', color: '#fde68a' }}>
+            Contactos
+          </span>
+          <strong>OTP</strong>
+          <p>Confirma correos y móviles mediante códigos de verificación enviados desde la consola.</p>
         </article>
       </section>
 
-      <section className="card-grid">
-        <article className="card">
+      <section className={styles.sections}>
+        <article className={styles.sectionCard}>
           <h3>Acciones rápidas</h3>
-          <ul>
-            <li>Explora el listado de usuarios y filtra por verificación.</li>
-            <li>Registra nuevos perfiles con validaciones en tiempo real.</li>
-            <li>Refresca catálogos de identificación y ubicación cuando sea necesario.</li>
+          <ul className={styles.sectionList}>
+            <li>Explora el directorio de usuarios y verifica sus estados de contacto.</li>
+            <li>Registra nuevos perfiles con catálogos de documento y ubicación actualizados.</li>
+            <li>Vuelve a enviar códigos de confirmación cuando sea necesario.</li>
           </ul>
-          <div className="card-actions card-actions--start">
-            <Link to="/users" className="btn btn-primary">
-              Ver usuarios registrados
+          <div className={styles.sectionFooter}>
+            <Link to="/users" className="button button--secondary">
+              Ir al listado de usuarios
             </Link>
           </div>
         </article>
 
-        <article className="card">
-          <h3>Soporte y monitoreo</h3>
+        <article className={styles.sectionCard}>
+          <h3>Monitoreo continuo</h3>
           <p>
-            ¿Dudas con la verificación o con los microservicios? Documentamos cada flujo. Comunícate con
-            soporte@uco.edu.co para escalamientos inmediatos.
+            Mantén la trazabilidad de los microservicios gracias al gateway. Si detectas incidentes,
+            contáctanos para escalamientos.
           </p>
-          <div className="card-actions card-actions--start">
-            <Link to="/" className="btn btn-outline">
-              Volver al inicio
+          <div className={styles.sectionFooter}>
+            <Link to="/" className="button button--ghost">
+              Volver a inicio
             </Link>
           </div>
         </article>
 
-        <article className="card" style={{ background: 'rgba(148, 163, 184, 0.15)' }}>
-          <h3>Próximos lanzamientos</h3>
+        <article className={styles.sectionCard}>
+          <h3>Próximas mejoras</h3>
           <p>
-            Roadmap preparado para dashboards analíticos, filtros avanzados y auditoría en tiempo real.
-            Mantente atento a las próximas iteraciones.
+            Estamos preparando vistas analíticas, auditoría de eventos y reportes descargables para ampliar
+            la gobernanza del sistema.
           </p>
         </article>
       </section>

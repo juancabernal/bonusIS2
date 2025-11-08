@@ -1,31 +1,32 @@
 import { Link } from 'react-router-dom'
 import { useAuth0 } from '@auth0/auth0-react'
 import LogoutButton from '../components/LogoutButton'
+import styles from './Home.module.css'
 
 const featureCards = [
   {
-    title: 'Operaciones bajo control',
+    title: 'Supervisión inmediata',
     description:
-      'Monitorea usuarios, verificaciones y catálogos clave desde una consola unificada con datos al instante.',
-    icon: '🛰️',
+      'Consulta usuarios, catálogos y verificaciones en una sola vista sin sacrificar velocidad.',
+    icon: '🧭',
   },
   {
-    title: 'Seguridad empresarial',
+    title: 'Seguridad Auth0',
     description:
-      'Protección Auth0 end-to-end, sesiones seguras y flujos de verificación que refuerzan la confianza.',
-    icon: '🛡️',
+      'Sesiones protegidas, scopes controlados y tokens gestionados automáticamente por el gateway.',
+    icon: '🔒',
   },
   {
-    title: 'Ecosistema conectado',
+    title: 'Flujos de validación',
     description:
-      'Integración directa con microservicios UCO. Consulta identificaciones, ubicaciones y más sin salir del panel.',
-    icon: '🔗',
+      'Envía códigos OTP y confirma contactos con retroalimentación inmediata para cada usuario.',
+    icon: '📡',
   },
   {
-    title: 'Listo para escalar',
+    title: 'Catálogos oficiales',
     description:
-      'Arquitectura cloud-native, métricas claras y experiencias responsivas para equipos ágiles.',
-    icon: '🚀',
+      'Documentos y ubicaciones actualizadas directamente desde los microservicios institucionales.',
+    icon: '🗂️',
   },
 ]
 
@@ -34,75 +35,72 @@ const Home = () => {
   const displayName = user?.name ?? user?.email ?? 'invitado'
 
   return (
-    <main className="page home-page">
-      <section className="home-hero">
-        <div>
-          <span className="home-hero__badge">👋 Hola {isAuthenticated ? displayName : 'bienvenido'}</span>
-          <h1 className="home-hero__title">Gestiona Uco Challenge con precisión milimétrica</h1>
-          <p className="home-hero__subtitle">
-            Una experiencia administrativa pensada para startups de alto crecimiento: oscura, elegante y
-            con la potencia que tu operación necesita para mantenerse sincronizada.
+    <main className={`page ${styles.home}`}>
+      <section className={styles.hero}>
+        <div className={styles.heroHeading}>
+          <span className={styles.heroBadge}>
+            👋 {isAuthenticated ? `Hola, ${displayName}` : 'Bienvenido a la consola'}
+          </span>
+          <h1 className={styles.heroTitle}>UCO Challenge Admin Console</h1>
+          <p className={styles.heroSubtitle}>
+            Observa el pulso operativo de la plataforma y ejecuta acciones críticas sobre usuarios y
+            verificaciones con una interfaz sobria y enfocada.
           </p>
-          <div className="home-hero__actions">
+          <div className={styles.heroActions}>
             {isAuthenticated ? (
               <>
-                <Link to="/dashboard" className="btn btn-primary">
-                  Ir al panel de control
+                <Link to="/dashboard" className="button button--primary">
+                  Abrir panel
                 </Link>
-                <LogoutButton className="btn btn-secondary" />
+                <Link to="/users" className="button button--secondary">
+                  Usuarios registrados
+                </Link>
+                <LogoutButton className="button button--ghost" />
               </>
             ) : (
-              <Link to="/login" className="btn btn-primary">
-                Iniciar sesión
-              </Link>
+              <>
+                <Link to="/login" className="button button--primary">
+                  Iniciar sesión
+                </Link>
+                <Link to="/users" className="button button--secondary">
+                  Explorar usuarios
+                </Link>
+              </>
             )}
-            <Link to="/users" className="btn btn-outline">
-              Ver usuarios
-            </Link>
           </div>
         </div>
-        <div className="home-hero__illustration" aria-hidden="true" />
-      </section>
 
-      <section className="feature-grid">
-        {featureCards.map((feature) => (
-          <article key={feature.title} className="card feature-card">
-            <span aria-hidden style={{ fontSize: '1.75rem' }}>
-              {feature.icon}
-            </span>
-            <h3>{feature.title}</h3>
-            <p>{feature.description}</p>
-          </article>
-        ))}
-      </section>
-
-      <section className="card" style={{ marginTop: '3rem' }}>
-        <header className="page-header" style={{ marginBottom: '1.5rem' }}>
+        <aside className={styles.heroPanel}>
           <div>
-            <h2 style={{ margin: 0 }}>Conectado con la Universidad Cooperativa de Colombia</h2>
+            <h3>Universidad Cooperativa de Colombia</h3>
             <p>
-              Integraciones vivas con catálogos de identificación, ubicaciones y validaciones de contacto
-              para garantizar datos confiables en cada registro.
+              Administración centralizada del ecosistema UCO: usuarios, catálogos, ubicaciones y
+              validaciones conectadas al API Gateway.
             </p>
           </div>
-        </header>
+          <div className={styles.heroMeta}>
+            <span>Operación en curso</span>
+            <span>API Gateway · Auth0 · Microservicios</span>
+          </div>
+        </aside>
+      </section>
 
-        <div className="card-grid">
-          <article className="card" style={{ background: 'rgba(15, 118, 110, 0.2)' }}>
-            <span className="metric-title">Integraciones clave</span>
-            <p className="metric-value">+6</p>
-            <p style={{ margin: 0 }}>Microservicios sincronizados en tiempo real mediante el API Gateway.</p>
-          </article>
-          <article className="card" style={{ background: 'rgba(59, 130, 246, 0.18)' }}>
-            <span className="metric-title">Verificaciones seguras</span>
-            <p className="metric-value">OTP</p>
-            <p style={{ margin: 0 }}>Flujos de email y SMS con feedback inmediato para usuarios confiables.</p>
-          </article>
-          <article className="card" style={{ background: 'rgba(124, 58, 237, 0.2)' }}>
-            <span className="metric-title">Disponibilidad</span>
-            <p className="metric-value">24/7</p>
-            <p style={{ margin: 0 }}>Arquitectura preparada para escalar sin interrumpir la operación.</p>
-          </article>
+      <section className={styles.featureSection}>
+        <header>
+          <h2>Capacidades destacadas</h2>
+          <p>
+            Una consola oscura y minimalista diseñada para que cada acción crítica esté a dos clics de
+            distancia.
+          </p>
+        </header>
+        <div className={styles.featureGrid}>
+          {featureCards.map((feature) => (
+            <article key={feature.title} className={styles.featureCard}>
+              <span aria-hidden>{feature.icon}</span>
+              <h3>{feature.title}</h3>
+              <p>{feature.description}</p>
+            </article>
+          ))}
         </div>
       </section>
     </main>

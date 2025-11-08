@@ -1,59 +1,51 @@
 .alert {
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: 1rem;
-  border-radius: 20px;
-  border: 1px solid rgba(248, 113, 113, 0.45);
-  background: linear-gradient(145deg, rgba(248, 113, 113, 0.18), rgba(15, 23, 42, 0.85));
-  padding: 1.5rem 1.75rem;
-  color: #fecaca;
-  box-shadow: 0 26px 55px rgba(127, 29, 29, 0.25);
+  padding: 1.6rem;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(249, 112, 112, 0.35);
+  background: rgba(51, 15, 24, 0.65);
+  box-shadow: 0 20px 45px rgba(76, 5, 23, 0.35);
 }
 
 .header {
   display: flex;
   align-items: flex-start;
-  gap: 1rem;
+  gap: 0.9rem;
 }
 
 .icon {
   flex-shrink: 0;
-  width: 2.4rem;
-  height: 2.4rem;
+  width: 2.2rem;
+  height: 2.2rem;
   border-radius: 999px;
   display: grid;
   place-items: center;
-  background: rgba(254, 226, 226, 0.2);
-  color: #fca5a5;
-  font-weight: 700;
-  font-size: 1.2rem;
+  background: rgba(249, 112, 112, 0.2);
+  color: #fecaca;
+  font-weight: 600;
 }
 
 .content {
-  flex: 1;
+  display: grid;
+  gap: 0.35rem;
 }
 
 .title {
   margin: 0;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #fee2e2;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fecaca;
 }
 
 .message {
-  margin: 0.35rem 0 0;
-  line-height: 1.5;
+  margin: 0;
+  color: rgba(255, 228, 230, 0.8);
   font-size: 0.95rem;
-  color: rgba(254, 226, 226, 0.85);
 }
 
 .actions {
   display: flex;
+  gap: 0.75rem;
   flex-wrap: wrap;
-  gap: 0.85rem;
-}
-
-.alert :global(button),
-.alert :global(.btn) {
-  border-radius: 999px;
 }

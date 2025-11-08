@@ -1,0 +1,114 @@
+.dashboard {
+  gap: clamp(2rem, 5vw, 3rem);
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.headerText {
+  display: grid;
+  gap: 0.45rem;
+  max-width: 520px;
+}
+
+.headerText h1 {
+  margin: 0;
+  font-size: clamp(1.8rem, 4vw, 2.2rem);
+}
+
+.headerText p {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.headerActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.metrics {
+  display: grid;
+  gap: 1.1rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.metricCard {
+  display: grid;
+  gap: 0.6rem;
+  padding: 1.4rem;
+  background: rgba(13, 17, 28, 0.85);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  box-shadow: 0 16px 40px rgba(3, 5, 12, 0.35);
+}
+
+.metricCard strong {
+  font-size: 1.7rem;
+}
+
+.metricBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid rgba(61, 214, 140, 0.35);
+  background: rgba(61, 214, 140, 0.12);
+  color: #a7f3d0;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sections {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.sectionCard {
+  display: grid;
+  gap: 1rem;
+  padding: 1.6rem;
+  background: rgba(11, 14, 24, 0.9);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.sectionCard h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.sectionCard p {
+  margin: 0;
+  color: var(--color-text-subtle);
+}
+
+.sectionList {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.5rem;
+  color: var(--color-text-subtle);
+}
+
+.sectionFooter {
+  margin-top: auto;
+}
+
+.sectionFooter .button {
+  width: fit-content;
+}
+
+@media (max-width: 720px) {
+  .sectionCard {
+    padding: 1.3rem;
+  }
+}

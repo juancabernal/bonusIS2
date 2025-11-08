@@ -1,33 +1,22 @@
 .selectWrapper {
   display: inline-flex;
   align-items: center;
-  gap: 0.65rem;
-  background: rgba(15, 23, 42, 0.55);
-  border: 1px solid rgba(148, 163, 184, 0.35);
-  padding: 0.45rem 0.85rem;
-  border-radius: 14px;
-  color: rgba(226, 232, 240, 0.78);
-  backdrop-filter: blur(10px);
+  gap: 0.6rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: rgba(11, 14, 24, 0.8);
 }
 
 .label {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: rgba(226, 232, 240, 0.7);
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
 }
 
 .select {
   border: none;
   background: transparent;
   font-weight: 600;
-  color: rgba(125, 211, 252, 0.9);
-  font-size: 0.95rem;
+  color: var(--color-text-primary);
   cursor: pointer;
-  padding: 0.35rem 0.5rem;
-  border-radius: 10px;
-}
-
-.select:focus-visible {
-  outline: 2px solid rgba(56, 189, 248, 0.75);
-  outline-offset: 2px;
 }
