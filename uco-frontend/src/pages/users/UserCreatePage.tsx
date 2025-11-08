@@ -1,10 +1,11 @@
 import { ChangeEvent, FocusEvent, FormEvent, useEffect, useState } from 'react'
-import { isAxiosError } from 'axios'
 import { Link, useNavigate } from 'react-router-dom'
 import { createUser } from '../../api/users'
 import { toast } from 'react-toastify'
-import { getCities, getCountries, getDepartments, type City, type Country, type Department } from '../../api/locations'
-import { getIdTypes, type IdType } from '../../api/idTypes'
+import { useIdTypes } from '@/hooks/useIdTypes'
+import { useCountries } from '@/hooks/useCountries'
+import { useDepartments } from '@/hooks/useDepartments'
+import { useCities } from '@/hooks/useCities'
 import { EMAIL_REGEX, MOBILE_CO_REGEX, validateUserForm, type UserForm } from '@/utils/validators'
 import styles from './UserCreatePage.module.css'
 
@@ -111,23 +112,38 @@ export default function UserCreatePage() {
   const [locationsError, setLocationsError] = useState<string | null>(null)
   const [failedRequest, setFailedRequest] = useState<'countries' | 'departments' | 'cities' | null>(null)
 
-  const [idTypes, setIdTypes] = useState<IdType[]>([])
-  const [loadingIdTypes, setLoadingIdTypes] = useState(false)
-  const [errorIdTypes, setErrorIdTypes] = useState<string | null>(null)
-
-  const [countries, setCountries] = useState<Country[]>([])
-  const [departments, setDepartments] = useState<Department[]>([])
-  const [cities, setCities] = useState<City[]>([])
   const [selectedCountry, setSelectedCountry] = useState('')
   const [selectedDepartment, setSelectedDepartment] = useState('')
 
-  const [countryRequestId, setCountryRequestId] = useState(0)
-  const [departmentRequestId, setDepartmentRequestId] = useState(0)
-  const [cityRequestId, setCityRequestId] = useState(0)
+  const {
+    data: idTypes,
+    loading: loadingIdTypes,
+    error: idTypesError,
+    refresh: refreshIdTypes,
+  } = useIdTypes()
 
-  const [loadingCountries, setLoadingCountries] = useState(false)
-  const [loadingDepartments, setLoadingDepartments] = useState(false)
-  const [loadingCities, setLoadingCities] = useState(false)
+  const {
+    data: countries,
+    loading: loadingCountries,
+    error: countriesError,
+    refresh: refreshCountries,
+  } = useCountries()
+
+  const {
+    data: departments,
+    loading: loadingDepartments,
+    error: departmentsError,
+    refresh: refreshDepartments,
+  } = useDepartments(selectedCountry)
+
+  const {
+    data: cities,
+    loading: loadingCities,
+    error: citiesError,
+    refresh: refreshCities,
+  } = useCities(selectedDepartment)
+
+  const errorIdTypes = idTypesError
 
   const navigate = useNavigate()
 
@@ -149,134 +165,97 @@ export default function UserCreatePage() {
   })
 
   useEffect(() => {
-    let active = true
-    setLoadingIdTypes(true)
-    setLoadingCountries(true)
-    setErrorIdTypes(null)
-    setLocationsError(null)
-    setFailedRequest(null)
-
-    ;(async () => {
-      try {
-        const [fetchedIdTypes, fetchedCountries] = await Promise.all([
-          getIdTypes(),
-          getCountries(),
-        ])
-        if (!active) return
-
-        setIdTypes(fetchedIdTypes)
-        setCountries(fetchedCountries)
-        setFormState((state) => {
-          if (!state.idType) {
-            return state
-          }
-          const exists = fetchedIdTypes.some((item) => {
-            const optionValue = item.code ?? item.id
-            return optionValue ? optionValue === state.idType : false
-          })
-          return exists ? state : { ...state, idType: '' }
-        })
-      } catch (error) {
-        console.error(error)
-        if (isAxiosError(error)) {
-          console.error(error.response?.data)
-        }
-        if (!active) return
-
-        setIdTypes([])
-        setCountries([])
-        setFormState((state) => ({ ...state, idType: '' }))
-        setErrorIdTypes('No se pudieron cargar los tipos de documento.')
-        setLocationsError('No se pudieron cargar los países. Inténtalo de nuevo.')
-        setFailedRequest('countries')
-      } finally {
-        if (!active) return
-        setLoadingIdTypes(false)
-        setLoadingCountries(false)
+    setFormState((state) => {
+      if (!state.idType) {
+        return state
       }
-    })()
 
-    return () => {
-      active = false
-    }
-  }, [countryRequestId])
+      const exists = idTypes.some((item) => {
+        const optionValue = item.code ?? item.id
+        return optionValue ? optionValue === state.idType : false
+      })
+
+      return exists ? state : { ...state, idType: '' }
+    })
+  }, [idTypes])
 
   useEffect(() => {
-    if (!selectedCountry) {
-      setDepartments([])
-      setSelectedDepartment('')
-      setCities([])
-      setFormState((state) => ({ ...state, homeCity: '' }))
+    if (countriesError) {
+      setLocationsError('No se pudieron cargar los países. Inténtalo de nuevo.')
+      setFailedRequest('countries')
       return
     }
 
-    let active = true
-    setLoadingDepartments(true)
+    if (departmentsError) {
+      setLocationsError('No se pudieron cargar los departamentos. Inténtalo de nuevo.')
+      setFailedRequest('departments')
+      return
+    }
+
+    if (citiesError) {
+      setLocationsError('No se pudieron cargar las ciudades. Inténtalo de nuevo.')
+      setFailedRequest('cities')
+      return
+    }
+
     setLocationsError(null)
     setFailedRequest(null)
-    setDepartments([])
-    setCities([])
-    setFormState((state) => ({ ...state, homeCity: '' }))
-    ;(async () => {
-      try {
-        const res = await getDepartments(selectedCountry)
-        if (!active) return
-        setDepartments(res)
-      } catch (error) {
-        console.error(error)
-        if (isAxiosError(error)) {
-          console.error(error.response?.data)
-        }
-        if (!active) return
-        setLocationsError('No se pudieron cargar los departamentos. Inténtalo de nuevo.')
-        setFailedRequest('departments')
-      } finally {
-        if (!active) return
-        setLoadingDepartments(false)
-      }
-    })()
+  }, [countriesError, departmentsError, citiesError])
 
-    return () => {
-      active = false
-    }
-  }, [selectedCountry, departmentRequestId])
+  useEffect(() => {
+    setSelectedDepartment('')
+    setFormState((state) => ({ ...state, homeCity: '' }))
+
+    setFieldErrors((prev) => {
+      const { country, department, homeCity, ...rest } = prev
+      return rest
+    })
+  }, [selectedCountry])
 
   useEffect(() => {
     if (!selectedDepartment) {
-      setCities([])
       setFormState((state) => ({ ...state, homeCity: '' }))
       return
     }
 
-    let active = true
-    setLoadingCities(true)
-    setLocationsError(null)
-    setFailedRequest(null)
-    setCities([])
-    setFormState((state) => ({ ...state, homeCity: '' }))
-    ;(async () => {
-      try {
-        const res = await getCities(selectedDepartment)
-        if (!active) return
-        setCities(res)
-      } catch (error) {
-        console.error(error)
-        if (isAxiosError(error)) {
-          console.error(error.response?.data)
-        }
-        if (!active) return
-        setLocationsError('No se pudieron cargar las ciudades. Inténtalo de nuevo.')
-        setFailedRequest('cities')
-      } finally {
-        if (!active) return
-        setLoadingCities(false)
-      }
-    })()
+    setFieldErrors((prev) => {
+      const { department, homeCity, ...rest } = prev
+      return rest
+    })
+  }, [selectedDepartment])
 
-    return () => {
-      active = false
+  useEffect(() => {
+    if (!selectedCountry) {
+      return
     }
-  }, [selectedDepartment, cityRequestId])
+
+    const exists = countries.some((country) => country.id === selectedCountry)
+    if (!exists) {
+      setSelectedCountry('')
+    }
+  }, [countries, selectedCountry])
+
+  useEffect(() => {
+    if (!selectedDepartment) {
+      return
+    }
+
+    const exists = departments.some((department) => department.id === selectedDepartment)
+    if (!exists) {
+      setSelectedDepartment('')
+    }
+  }, [departments, selectedDepartment])
+
+  useEffect(() => {
+    setFormState((state) => {
+      if (!state.homeCity) {
+        return state
+      }
+
+      const exists = cities.some((city) => city.id === state.homeCity)
+      return exists ? state : { ...state, homeCity: '' }
+    })
+  }, [cities])
 
   const onFieldChange = (e: ChangeEvent<HTMLInputElement>) => {
     const fieldName = e.target.name as keyof CreateUserRequest
@@ -336,6 +315,7 @@ export default function UserCreatePage() {
     setFailedRequest(null)
     setSelectedCountry(value)
     setSelectedDepartment('')
+    setFormState((state) => ({ ...state, homeCity: '' }))
     setFieldErrors((prev) => {
       const { country, department, homeCity, ...rest } = prev
       return rest
@@ -347,6 +327,7 @@ export default function UserCreatePage() {
     setLocationsError(null)
     setFailedRequest(null)
     setSelectedDepartment(value)
+    setFormState((state) => ({ ...state, homeCity: '' }))
     setFieldErrors((prev) => {
       const { department, homeCity, ...rest } = prev
       return rest
@@ -365,17 +346,20 @@ export default function UserCreatePage() {
   }
 
   const handleRetryLocations = () => {
+    setLocationsError(null)
+    setFailedRequest(null)
+
     if (failedRequest === 'departments') {
-      setDepartmentRequestId((id) => id + 1)
+      refreshDepartments()
       return
     }
 
     if (failedRequest === 'cities') {
-      setCityRequestId((id) => id + 1)
+      refreshCities()
       return
     }
 
-    setCountryRequestId((id) => id + 1)
+    refreshCountries()
   }
 
   const onSubmit = async (e: FormEvent) => {
@@ -446,7 +430,13 @@ export default function UserCreatePage() {
       const result = await createUser(registerPayload)
       console.debug('Usuario creado con éxito', result)
       toast.success('Usuario registrado correctamente')
-      navigate('/users', { replace: true })
+      navigate('/users', {
+        replace: true,
+        state: {
+          refresh: Date.now(),
+          feedback: { type: 'success', message: 'Usuario registrado correctamente.' },
+        },
+      })
     } catch (error: any) {
       const responseData = error?.response?.data as BackendErrorResponse | undefined
       const apiError = (responseData as { data?: BackendErrorResponse } | undefined)?.data ?? responseData
@@ -617,7 +607,7 @@ export default function UserCreatePage() {
                     type="button"
                     className={`button button--ghost ${styles.retryButton}`.trim()}
                     onClick={() => {
-                      setCountryRequestId((id) => id + 1)
+                      refreshIdTypes()
                     }}
                   >
                     Reintentar
