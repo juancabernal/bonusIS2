@@ -46,6 +46,9 @@ const VerifyContactPage = () => {
   }, [initialContact])
 
   const validateContact = (value: string) => EMAIL_REGEX.test(value) || PHONE_REGEX.test(value)
+  const isCodeReady = CODE_REGEX.test(code)
+  const isContactReady = validateContact(contact.trim())
+  const canSubmit = isContactReady && isCodeReady && !loading
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -148,6 +151,7 @@ const VerifyContactPage = () => {
               }}
               aria-describedby={error ? 'verify-error' : undefined}
               aria-invalid={errorField === 'code' ? true : undefined}
+              className="otp-input"
               required
             />
           </div>
@@ -160,7 +164,7 @@ const VerifyContactPage = () => {
           )}
 
           <div className="card-actions card-actions--start">
-            <button type="submit" className="btn btn-primary" disabled={loading}>
+            <button type="submit" className="btn btn-primary" disabled={!canSubmit}>
               {loading ? 'Verificando...' : 'Verificar'}
             </button>
           </div>

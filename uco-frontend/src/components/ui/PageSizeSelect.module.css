@@ -2,24 +2,25 @@
   display: inline-flex;
   align-items: center;
   gap: 0.65rem;
-  background: rgba(15, 23, 42, 0.04);
+  background: rgba(15, 23, 42, 0.55);
   border: 1px solid rgba(148, 163, 184, 0.35);
-  padding: 0.45rem 0.75rem;
+  padding: 0.45rem 0.85rem;
   border-radius: 14px;
-  color: #0f172a;
+  color: rgba(226, 232, 240, 0.78);
+  backdrop-filter: blur(10px);
 }
 
 .label {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #475569;
+  color: rgba(226, 232, 240, 0.7);
 }
 
 .select {
   border: none;
   background: transparent;
   font-weight: 600;
-  color: #1d4ed8;
+  color: rgba(125, 211, 252, 0.9);
   font-size: 0.95rem;
   cursor: pointer;
   padding: 0.35rem 0.5rem;
@@ -27,6 +28,6 @@
 }
 
 .select:focus-visible {
-  outline: 2px solid #2563eb;
+  outline: 2px solid rgba(56, 189, 248, 0.75);
   outline-offset: 2px;
 }
