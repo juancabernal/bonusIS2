@@ -60,7 +60,7 @@ public class UserRepositoryAdapter implements RegisterUserRepositoryPort, FindUs
         }
 
         @Override
-        @CacheEvict(cacheNames = "usersByPage", allEntries = true)
+        @CacheEvict(cacheNames = "usersByPage", allEntries = true, beforeInvocation = true)
         public void save(final RegisterUserDomain domain) {
                 repository.save(mapToEntity(domain));
         }
@@ -83,7 +83,7 @@ public class UserRepositoryAdapter implements RegisterUserRepositoryPort, FindUs
         }
 
         @Override
-        @CacheEvict(cacheNames = "usersByPage", allEntries = true)
+        @CacheEvict(cacheNames = "usersByPage", allEntries = true, beforeInvocation = true)
         public boolean confirmEmail(final UUID id) {
                 return repository.findById(id)
                                 .map(entity -> {
@@ -95,7 +95,7 @@ public class UserRepositoryAdapter implements RegisterUserRepositoryPort, FindUs
         }
 
         @Override
-        @CacheEvict(cacheNames = "usersByPage", allEntries = true)
+        @CacheEvict(cacheNames = "usersByPage", allEntries = true, beforeInvocation = true)
         public boolean confirmMobileNumber(final UUID id) {
                 return repository.findById(id)
                                 .map(entity -> {
@@ -107,7 +107,7 @@ public class UserRepositoryAdapter implements RegisterUserRepositoryPort, FindUs
         }
 
         @Override
-        @CacheEvict(cacheNames = "usersByPage", allEntries = true)
+        @CacheEvict(cacheNames = "usersByPage", allEntries = true, beforeInvocation = true)
         public void confirmEmailOrMobile(String contact) {
                 repository.findByEmail(contact).ifPresent(entity -> {
                         entity.confirmEmail();

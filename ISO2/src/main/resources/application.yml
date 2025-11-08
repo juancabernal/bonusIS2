@@ -92,7 +92,7 @@ spring:
   cache:
     type: redis
     redis:
-      time-to-live: 300000
+      time-to-live: 60000
   data:
     redis:
       host: ${REDIS_HOST:localhost}
@@ -101,11 +101,11 @@ spring:
 uco:
   cache:
     users:
-      ttl-seconds: 300
+      ttl-seconds: 30
     messages:
-      ttl-seconds: 900
+      ttl-seconds: 300
     parameters:
-      ttl-seconds: 900
+      ttl-seconds: 300
 
 logging:
   level:
