@@ -6,6 +6,7 @@ import { toast } from 'react-toastify'
 import { getCities, getCountries, getDepartments, type City, type Country, type Department } from '../../api/locations'
 import { getIdTypes, type IdType } from '../../api/idTypes'
 import { EMAIL_REGEX, MOBILE_CO_REGEX, validateUserForm, type UserForm } from '@/utils/validators'
+import styles from './UserCreatePage.module.css'
 
 interface CreateUserRequest {
   idType: string
@@ -444,7 +445,7 @@ export default function UserCreatePage() {
     try {
       const result = await createUser(registerPayload)
       console.debug('Usuario creado con éxito', result)
-      // TODO: notificar éxito
+      toast.success('Usuario registrado correctamente')
       navigate('/users', { replace: true })
     } catch (error: any) {
       const responseData = error?.response?.data as BackendErrorResponse | undefined
@@ -543,36 +544,37 @@ export default function UserCreatePage() {
     }
   }
 
-  const hasErrors = Object.keys(fieldErrors).length > 0
-
   return (
-    <main className="page">
-      <header className="page-header">
-        <div>
-          <h1>Registrar usuario</h1>
-          <p>
-            Completa la información oficial y verifica los datos clave para incorporar nuevos usuarios al
-            ecosistema Uco Challenge.
-          </p>
-        </div>
+    <main className={`page ${styles.page}`}>
+      <header className={styles.header}>
+        <h1>Registrar usuario</h1>
+        <p>
+          Completa la información oficial y verifica los datos clave para incorporar nuevos usuarios al
+          ecosistema UCO Challenge.
+        </p>
       </header>
 
-      <form className="form" onSubmit={onSubmit} noValidate>
-        <section className="card form-section" aria-labelledby="personal-data">
-          <header className="form-section__header">
-            <h2 id="personal-data" className="form-section__title">
-              Datos personales
-            </h2>
-            <p className="form-section__description">
-              Define la identidad oficial del usuario tal como aparece en los registros de la institución.
-            </p>
-          </header>
+      {err ? (
+        <div className={styles.alert} role="alert">
+          <span aria-hidden>⚠</span>
+          <span>{err}</span>
+        </div>
+      ) : null}
 
-          <div className="form-grid">
-            <div
-              className={`form-control${fieldErrors.idType ? ' form-control--error' : ''}`}
-            >
-              <label htmlFor="idType">Tipo de identificación*</label>
+      <form className={styles.form} onSubmit={onSubmit} noValidate>
+        <section className={styles.section} aria-labelledby="identity-data">
+          <div className={styles.sectionHeader}>
+            <h2 id="identity-data" className={styles.sectionTitle}>
+              Datos de identificación
+            </h2>
+            <p className={styles.sectionDescription}>
+              Selecciona el tipo de documento y número oficial que identifican al usuario.
+            </p>
+          </div>
+
+          <div className={styles.fieldGrid}>
+            <div className={`${styles.field} ${fieldErrors.idType ? styles.fieldError : ''}`}>
+              <span className={styles.label}>Tipo de identificación*</span>
               <select
                 id="idType"
                 name="idType"
@@ -589,7 +591,7 @@ export default function UserCreatePage() {
                 aria-label="Selecciona el tipo de documento"
                 title="Selecciona el tipo de documento"
                 required
-                className="input select"
+                className={styles.control}
                 aria-invalid={Boolean(fieldErrors.idType)}
               >
                 <option value="">
@@ -601,91 +603,82 @@ export default function UserCreatePage() {
                   </option>
                 ))}
               </select>
-              {fieldErrors.idType ? (
-                <span className="form-error">{fieldErrors.idType}</span>
-              ) : null}
+              {fieldErrors.idType ? <span className={styles.error}>{fieldErrors.idType}</span> : null}
               {loadingIdTypes ? (
-                <div className="form-helper" role="status" aria-live="polite">
-                  <span
-                    className="loader__spinner"
-                    aria-hidden
-                    style={{ width: '24px', height: '24px', borderWidth: '3px' }}
-                  />
+                <div className={styles.loadingHint} role="status" aria-live="polite">
+                  <span className="loader__spinner" aria-hidden style={{ width: '22px', height: '22px', borderWidth: '3px' }} />
                   Cargando tipos de documento...
                 </div>
               ) : null}
               {errorIdTypes ? (
-                <div className="alert alert--info" role="alert">
-                  <span aria-hidden>ℹ️</span>
-                  <div>
-                    <p style={{ margin: 0 }}>{errorIdTypes}</p>
-                    <button
-                      type="button"
-                      className="btn btn-outline"
-                      style={{ marginTop: '0.75rem' }}
-                      onClick={() => {
-                        setCountryRequestId((id) => id + 1)
-                      }}
-                    >
-                      Reintentar
-                    </button>
-                  </div>
+                <div className={styles.inlineAlert} role="alert">
+                  <span>{errorIdTypes}</span>
+                  <button
+                    type="button"
+                    className={`button button--ghost ${styles.retryButton}`.trim()}
+                    onClick={() => {
+                      setCountryRequestId((id) => id + 1)
+                    }}
+                  >
+                    Reintentar
+                  </button>
                 </div>
               ) : null}
               {!loadingIdTypes && !errorIdTypes && idTypes.length === 0 ? (
-                <span className="form-helper">No hay tipos de documento disponibles.</span>
+                <span className={styles.helper}>No hay tipos de documento disponibles.</span>
               ) : null}
             </div>
 
-            <label
-              className={`form-control${fieldErrors.idNumber ? ' form-control--error' : ''}`}
-              htmlFor="idNumber"
-            >
-              Número de identificación*
+            <div className={`${styles.field} ${fieldErrors.idNumber ? styles.fieldError : ''}`}>
+              <span className={styles.label}>Número de identificación*</span>
               <input
                 id="idNumber"
                 name="idNumber"
                 value={formState.idNumber}
                 onChange={onFieldChange}
                 onBlur={handleBlur}
-                placeholder="Ingresa el número"
-                autoComplete="off"
+                placeholder="Ej. 1234567890"
                 inputMode="numeric"
-                pattern="\\d*"
+                autoComplete="off"
                 required
+                className={styles.control}
                 aria-invalid={Boolean(fieldErrors.idNumber)}
               />
-              {fieldErrors.idNumber ? (
-                <span className="form-error">{fieldErrors.idNumber}</span>
-              ) : null}
-            </label>
+              {fieldErrors.idNumber ? <span className={styles.error}>{fieldErrors.idNumber}</span> : null}
+            </div>
+          </div>
+        </section>
 
-            <label
-              className={`form-control${fieldErrors.firstName ? ' form-control--error' : ''}`}
-              htmlFor="firstName"
-            >
-              Primer nombre*
+        <section className={styles.section} aria-labelledby="personal-data">
+          <div className={styles.sectionHeader}>
+            <h2 id="personal-data" className={styles.sectionTitle}>
+              Datos personales
+            </h2>
+            <p className={styles.sectionDescription}>
+              Define los nombres y apellidos tal como aparecen en la documentación oficial.
+            </p>
+          </div>
+
+          <div className={styles.fieldGrid}>
+            <div className={`${styles.field} ${fieldErrors.firstName ? styles.fieldError : ''}`}>
+              <span className={styles.label}>Primer nombre*</span>
               <input
                 id="firstName"
                 name="firstName"
                 value={formState.firstName}
                 onChange={onFieldChange}
                 onBlur={handleBlur}
-                placeholder="Ej. María"
+                placeholder="Ej. Ana"
                 autoComplete="given-name"
                 required
+                className={styles.control}
                 aria-invalid={Boolean(fieldErrors.firstName)}
               />
-              {fieldErrors.firstName ? (
-                <span className="form-error">{fieldErrors.firstName}</span>
-              ) : null}
-            </label>
+              {fieldErrors.firstName ? <span className={styles.error}>{fieldErrors.firstName}</span> : null}
+            </div>
 
-            <label
-              className={`form-control${fieldErrors.secondName ? ' form-control--error' : ''}`}
-              htmlFor="secondName"
-            >
-              Segundo nombre
+            <div className={`${styles.field} ${fieldErrors.secondName ? styles.fieldError : ''}`}>
+              <span className={styles.label}>Segundo nombre</span>
               <input
                 id="secondName"
                 name="secondName"
@@ -694,18 +687,14 @@ export default function UserCreatePage() {
                 onBlur={handleBlur}
                 placeholder="Opcional"
                 autoComplete="given-name"
+                className={styles.control}
               />
-              {fieldErrors.secondName ? (
-                <span className="form-error">{fieldErrors.secondName}</span>
-              ) : null}
-              <span className="form-helper">Este campo es opcional.</span>
-            </label>
+              {fieldErrors.secondName ? <span className={styles.error}>{fieldErrors.secondName}</span> : null}
+              <span className={styles.helper}>Este campo es opcional.</span>
+            </div>
 
-            <label
-              className={`form-control${fieldErrors.firstSurname ? ' form-control--error' : ''}`}
-              htmlFor="firstSurname"
-            >
-              Primer apellido*
+            <div className={`${styles.field} ${fieldErrors.firstSurname ? styles.fieldError : ''}`}>
+              <span className={styles.label}>Primer apellido*</span>
               <input
                 id="firstSurname"
                 name="firstSurname"
@@ -715,18 +704,14 @@ export default function UserCreatePage() {
                 placeholder="Ej. González"
                 autoComplete="family-name"
                 required
+                className={styles.control}
                 aria-invalid={Boolean(fieldErrors.firstSurname)}
               />
-              {fieldErrors.firstSurname ? (
-                <span className="form-error">{fieldErrors.firstSurname}</span>
-              ) : null}
-            </label>
+              {fieldErrors.firstSurname ? <span className={styles.error}>{fieldErrors.firstSurname}</span> : null}
+            </div>
 
-            <label
-              className={`form-control${fieldErrors.secondSurname ? ' form-control--error' : ''}`}
-              htmlFor="secondSurname"
-            >
-              Segundo apellido
+            <div className={`${styles.field} ${fieldErrors.secondSurname ? styles.fieldError : ''}`}>
+              <span className={styles.label}>Segundo apellido</span>
               <input
                 id="secondSurname"
                 name="secondSurname"
@@ -735,30 +720,27 @@ export default function UserCreatePage() {
                 onBlur={handleBlur}
                 placeholder="Opcional"
                 autoComplete="family-name"
+                className={styles.control}
               />
-              {fieldErrors.secondSurname ? (
-                <span className="form-error">{fieldErrors.secondSurname}</span>
-              ) : null}
-            </label>
+              {fieldErrors.secondSurname ? <span className={styles.error}>{fieldErrors.secondSurname}</span> : null}
+              <span className={styles.helper}>Este campo es opcional.</span>
+            </div>
           </div>
         </section>
 
-        <section className="card form-section" aria-labelledby="location-data">
-          <header className="form-section__header">
-            <h2 id="location-data" className="form-section__title">
+        <section className={styles.section} aria-labelledby="location-data">
+          <div className={styles.sectionHeader}>
+            <h2 id="location-data" className={styles.sectionTitle}>
               Ubicación
             </h2>
-            <p className="form-section__description">
-              Selecciona el país, departamento y ciudad que definirán la ubicación oficial del usuario.
+            <p className={styles.sectionDescription}>
+              Selecciona país, departamento y ciudad para asociar la residencia del usuario.
             </p>
-          </header>
+          </div>
 
-          <div className="form-grid">
-            <label
-              className={`form-control${fieldErrors.country ? ' form-control--error' : ''}`}
-              htmlFor="country"
-            >
-              País*
+          <div className={styles.fieldGrid}>
+            <div className={`${styles.field} ${fieldErrors.country ? styles.fieldError : ''}`}>
+              <span className={styles.label}>País*</span>
               <select
                 id="country"
                 value={selectedCountry}
@@ -766,6 +748,7 @@ export default function UserCreatePage() {
                 disabled={loadingCountries || countries.length === 0}
                 aria-busy={loadingCountries}
                 required
+                className={styles.control}
                 aria-invalid={Boolean(fieldErrors.country)}
               >
                 <option value="">
@@ -777,16 +760,11 @@ export default function UserCreatePage() {
                   </option>
                 ))}
               </select>
-              {fieldErrors.country ? (
-                <span className="form-error">{fieldErrors.country}</span>
-              ) : null}
-            </label>
+              {fieldErrors.country ? <span className={styles.error}>{fieldErrors.country}</span> : null}
+            </div>
 
-            <label
-              className={`form-control${fieldErrors.department ? ' form-control--error' : ''}`}
-              htmlFor="department"
-            >
-              Departamento*
+            <div className={`${styles.field} ${fieldErrors.department ? styles.fieldError : ''}`}>
+              <span className={styles.label}>Departamento*</span>
               <select
                 id="department"
                 value={selectedDepartment}
@@ -794,6 +772,7 @@ export default function UserCreatePage() {
                 disabled={!selectedCountry || loadingDepartments || departments.length === 0}
                 aria-busy={loadingDepartments}
                 required
+                className={styles.control}
                 aria-invalid={Boolean(fieldErrors.department)}
               >
                 <option value="">
@@ -809,16 +788,11 @@ export default function UserCreatePage() {
                   </option>
                 ))}
               </select>
-              {fieldErrors.department ? (
-                <span className="form-error">{fieldErrors.department}</span>
-              ) : null}
-            </label>
+              {fieldErrors.department ? <span className={styles.error}>{fieldErrors.department}</span> : null}
+            </div>
 
-            <label
-              className={`form-control${fieldErrors.homeCity ? ' form-control--error' : ''}`}
-              htmlFor="homeCity"
-            >
-              Ciudad*
+            <div className={`${styles.field} ${fieldErrors.homeCity ? styles.fieldError : ''}`}>
+              <span className={styles.label}>Ciudad*</span>
               <select
                 id="homeCity"
                 value={formState.homeCity}
@@ -826,6 +800,7 @@ export default function UserCreatePage() {
                 disabled={!selectedDepartment || loadingCities || cities.length === 0}
                 aria-busy={loadingCities}
                 required
+                className={styles.control}
                 aria-invalid={Boolean(fieldErrors.homeCity)}
               >
                 <option value="">
@@ -841,69 +816,56 @@ export default function UserCreatePage() {
                   </option>
                 ))}
               </select>
-              {fieldErrors.homeCity ? (
-                <span className="form-error">{fieldErrors.homeCity}</span>
-              ) : null}
-            </label>
+              {fieldErrors.homeCity ? <span className={styles.error}>{fieldErrors.homeCity}</span> : null}
+            </div>
           </div>
 
-          {locationsError && (
-            <div className="alert alert--error" role="alert">
-              <span aria-hidden>⚠️</span>
-              <div>
-                <p style={{ margin: 0 }}>{locationsError}</p>
-                <button
-                  type="button"
-                  className="btn btn-outline"
-                  style={{ marginTop: '0.75rem' }}
-                  onClick={handleRetryLocations}
-                >
-                  Reintentar carga
-                </button>
-              </div>
+          {locationsError ? (
+            <div className={styles.inlineAlert} role="alert">
+              <span>{locationsError}</span>
+              <button
+                type="button"
+                className={`button button--ghost ${styles.retryButton}`.trim()}
+                onClick={handleRetryLocations}
+              >
+                Reintentar
+              </button>
             </div>
-          )}
+          ) : null}
         </section>
 
-        <section className="card form-section" aria-labelledby="contact-data">
-          <header className="form-section__header">
-            <h2 id="contact-data" className="form-section__title">
-              Datos de contacto
+        <section className={styles.section} aria-labelledby="contact-data">
+          <div className={styles.sectionHeader}>
+            <h2 id="contact-data" className={styles.sectionTitle}>
+              Contacto
             </h2>
-            <p className="form-section__description">
-              Asegura canales confiables para activar el flujo de verificación por correo y por SMS.
+            <p className={styles.sectionDescription}>
+              Datos utilizados para los flujos de verificación vía correo y SMS.
             </p>
-          </header>
+          </div>
 
-          <div className="form-grid">
-            <label
-              className={`form-control${fieldErrors.email ? ' form-control--error' : ''}`}
-              htmlFor="email"
-            >
-              Correo electrónico*
+          <div className={styles.fieldGrid}>
+            <div className={`${styles.field} ${fieldErrors.email ? styles.fieldError : ''}`}>
+              <span className={styles.label}>Correo electrónico</span>
               <input
                 id="email"
-                type="email"
                 name="email"
+                type="email"
                 value={formState.email}
                 onChange={onFieldChange}
                 onBlur={handleBlur}
                 placeholder="usuario@uco.edu.co"
                 autoComplete="email"
-                pattern={emailPattern}
-                required
+                className={styles.control}
                 aria-invalid={Boolean(fieldErrors.email)}
+                pattern={emailPattern}
               />
-              {fieldErrors.email ? (
-                <span className="form-error">{fieldErrors.email}</span>
-              ) : null}
-            </label>
+              {fieldErrors.email ? <span className={styles.error}>{fieldErrors.email}</span> : null}
+              <span className={styles.helper}>Utiliza un correo institucional o de contacto directo.</span>
+            </div>
 
-            <label
-              className={`form-control${fieldErrors.mobileNumber ? ' form-control--error' : ''}`}
-              htmlFor="mobileNumber"
-            >
-              Teléfono móvil*
+            <div className={`${styles.field} ${fieldErrors.mobileNumber ? styles.fieldError : ''}`}>
+              <span className={styles.label}>Número de móvil</span>
               <input
                 id="mobileNumber"
                 name="mobileNumber"
@@ -911,33 +873,23 @@ export default function UserCreatePage() {
                 onChange={onFieldChange}
                 onBlur={handleBlur}
                 placeholder="Ej. 3001234567"
-                autoComplete="tel"
                 inputMode="numeric"
                 pattern={mobilePattern}
-                maxLength={10}
-                required
+                className={styles.control}
                 aria-invalid={Boolean(fieldErrors.mobileNumber)}
               />
-              {fieldErrors.mobileNumber ? (
-                <span className="form-error">{fieldErrors.mobileNumber}</span>
-              ) : null}
-            </label>
+              {fieldErrors.mobileNumber ? <span className={styles.error}>{fieldErrors.mobileNumber}</span> : null}
+              <span className={styles.helper}>Formato 10 dígitos. Utilizado para verificación vía SMS.</span>
+            </div>
           </div>
         </section>
 
-        {err && (
-          <div className="alert alert--error" role="alert">
-            <span aria-hidden>⚠️</span>
-            <span>{err}</span>
-          </div>
-        )}
-
-        <div className="form-actions">
-          <Link to="/users" className="btn btn-secondary">
+        <div className={styles.actions}>
+          <Link className="button button--ghost" to="/users">
             Cancelar
           </Link>
-          <button className="btn btn-primary" type="submit" disabled={saving || hasErrors}>
-            {saving ? 'Guardando...' : 'Registrar usuario'}
+          <button className="button button--primary" type="submit" disabled={saving} aria-busy={saving}>
+            {saving ? 'Registrando...' : 'Registrar usuario'}
           </button>
         </div>
       </form>

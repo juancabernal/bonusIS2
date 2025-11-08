@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { ChangeEvent, useEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import { isAxiosError } from 'axios'
 import { toast } from 'react-toastify'
@@ -26,6 +26,7 @@ interface UserSummary {
   firstName: string
   lastName?: string | null
   email: string
+  documentNumber?: string | null
   mobileNumber?: string | null
   emailConfirmed?: boolean | null
   mobileNumberConfirmed?: boolean | null
@@ -61,6 +62,7 @@ const UsersListPage = () => {
   const [error, setError] = useState<string | null>(null)
   const [refreshIndex, setRefreshIndex] = useState(0)
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
+  const [query, setQuery] = useState('')
   const [modal, setModal] = useState<ModalState>({
     open: false,
     userId: '',
@@ -141,6 +143,10 @@ const UsersListPage = () => {
     setSearchParams(next)
   }
 
+  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value)
+  }
+
   const reloadUsers = () => {
     setRefreshIndex((value) => value + 1)
   }
@@ -151,6 +157,31 @@ const UsersListPage = () => {
 
   const totalUsers = data?.totalElements ?? 0
   const users = data?.users ?? []
+  const normalizedQuery = query.trim().toLowerCase()
+  const filteredUsers = useMemo(() => {
+    if (!normalizedQuery) {
+      return users
+    }
+
+    return users.filter((user) => {
+      const fullName = [user.firstName, user.lastName ?? ''].filter(Boolean).join(' ').toLowerCase()
+      const email = user.email.toLowerCase()
+      const document = user.documentNumber?.toLowerCase() ?? ''
+      const mobile = user.mobileNumber?.toString().toLowerCase() ?? ''
+      const identifier = user.id.toLowerCase()
+
+      return (
+        fullName.includes(normalizedQuery) ||
+        email.includes(normalizedQuery) ||
+        document.includes(normalizedQuery) ||
+        mobile.includes(normalizedQuery) ||
+        identifier.includes(normalizedQuery)
+      )
+    })
+  }, [users, normalizedQuery])
+  const hasQuery = normalizedQuery.length > 0
+  const pageCount = users.length
+  const filteredCount = filteredUsers.length
 
   const refreshSignal = (location.state as { refresh?: number } | null)?.refresh
 
@@ -224,38 +255,71 @@ const UsersListPage = () => {
   return (
     <main className="page">
       <header className={styles.header}>
-        <div className={styles.headerText}>
-          <h1>Usuarios</h1>
-          <p>Consulta y gestiona los usuarios registrados en la plataforma.</p>
-        </div>
-        <div className={styles.headerActions}>
-          <PageSizeSelect value={size} onChange={handleSizeChange} />
-          <Link className="btn btn-accent" to="/users/new" aria-label="Registrar nuevo usuario">
-            Registrar nuevo usuario
-          </Link>
+        <div className={styles.headerTop}>
+          <div className={styles.headerText}>
+            <h1>Usuarios</h1>
+            <p>Gestiona el directorio oficial de usuarios y controla su estado de verificación.</p>
+          </div>
+          <div className={styles.headerActions}>
+            <div className={styles.filters}>
+              <div className={styles.search}>
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden>
+                  <path
+                    d="M15.5 15.5L20 20"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <circle cx="11" cy="11" r="6" stroke="currentColor" strokeWidth="1.5" />
+                </svg>
+                <label className="visually-hidden" htmlFor="user-search">
+                  Buscar usuarios
+                </label>
+                <input
+                  id="user-search"
+                  type="search"
+                  value={query}
+                  onChange={handleSearchChange}
+                  placeholder="Buscar por nombre, documento o correo"
+                  autoComplete="off"
+                />
+              </div>
+              <PageSizeSelect value={size} onChange={handleSizeChange} />
+            </div>
+            <Link className="button button--primary" to="/users/new" aria-label="Registrar nuevo usuario">
+              Registrar usuario
+            </Link>
+          </div>
         </div>
       </header>
 
-      <section className={`card card--accent ${styles.metricsCard}`} aria-live="polite">
-        <p className={styles.metricLabel}>Usuarios totales</p>
-        <p className={styles.metricValue}>{totalUsers}</p>
-        <p className={styles.metricHelper}>Mostrando {users.length} registros en esta vista.</p>
+      <section className={styles.summaryCard} aria-live="polite">
+        <span className={styles.summaryLabel}>Usuarios totales</span>
+        <p className={styles.summaryValue}>{totalUsers}</p>
+        <p className={styles.summaryHelper}>
+          {hasQuery
+            ? `Filtrando ${filteredCount} de ${pageCount} registros en esta página.`
+            : `Mostrando ${pageCount} registros en esta página.`}
+        </p>
       </section>
 
       {feedback && (
         <div
-          className={`alert ${feedback.type === 'success' ? 'alert--success' : 'alert--error'}`.trim()}
+          className={`${styles.feedback} ${
+            feedback.type === 'success' ? styles.feedbackSuccess : styles.feedbackError
+          }`.trim()}
           role="status"
           aria-live="assertive"
         >
-          <span aria-hidden>{feedback.type === 'success' ? '✅' : '⚠️'}</span>
+          <span aria-hidden>{feedback.type === 'success' ? '✔' : '⚠'}</span>
           <span>{feedback.message}</span>
         </div>
       )}
 
       <div className={styles.contentStack}>
         {loading && (
-          <section className="card" aria-busy="true">
+          <section className={styles.summaryCard} aria-busy="true">
             <LoadingSpinner label="Cargando usuarios..." />
           </section>
         )}
@@ -265,28 +329,32 @@ const UsersListPage = () => {
             message={error}
             actions={
               <>
-                <button type="button" className="btn btn-primary" onClick={handleRetry} aria-label="Reintentar carga">
+                <button type="button" className="button button--primary" onClick={handleRetry} aria-label="Reintentar carga">
                   Reintentar
                 </button>
-                <Link to="/" className="btn btn-outline" aria-label="Ir al inicio">
+                <Link to="/" className="button button--ghost" aria-label="Ir al inicio">
                   Ir al inicio
                 </Link>
               </>
             }
           >
-            <p className={styles.metricHelper}>
+            <p className={styles.summaryHelper}>
               Verifica tu conexión o tus permisos e intenta nuevamente.
             </p>
           </ErrorAlert>
         )}
 
-        {!loading && !error && users.length === 0 && (
+        {!loading && !error && pageCount === 0 && (
           <EmptyState description="No hay usuarios registrados todavía." />
         )}
 
-        {!loading && !error && users.length > 0 && (
+        {!loading && !error && pageCount > 0 && hasQuery && filteredCount === 0 && (
+          <EmptyState title="Sin coincidencias" description="No se encontraron usuarios para esta búsqueda." />
+        )}
+
+        {!loading && !error && filteredCount > 0 && (
           <UsersTable
-            data={users}
+            data={filteredUsers}
             onConfirmEmail={(user) =>
               void openVerificationFor(user.id, 'email', user.email.trim())
             }

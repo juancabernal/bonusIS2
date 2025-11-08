@@ -89,14 +89,14 @@ export default function VerificationModal({
         />
 
         <div className={styles.actions}>
-          <button type="button" onClick={onClose} className={styles.btnCancel} disabled={submitting}>
+          <button type="button" onClick={onClose} className="button button--ghost" disabled={submitting}>
             Cancelar
           </button>
           <button
             type="button"
             onClick={handleConfirm}
             disabled={submitting || !isValidCode}
-            className={styles.btnConfirm}
+            className="button button--primary"
             aria-busy={submitting}
           >
             {submitting ? 'Confirmando...' : 'Confirmar'}

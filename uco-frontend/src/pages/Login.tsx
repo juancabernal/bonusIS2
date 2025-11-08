@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo } from 'react'
 import { Link, useLocation, useNavigate, type Location } from 'react-router-dom'
 import { useAuth0 } from '@auth0/auth0-react'
 import Loading from '../components/Loading'
+import styles from './Login.module.css'
 
 const Login = () => {
   const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0()
@@ -53,24 +54,26 @@ const Login = () => {
 
   if (unauthorized) {
     return (
-      <main className="page">
-        <section className="card status-card status-card--warning" role="alert">
-          <span className="status-icon" aria-hidden>
-            ⚠️
-          </span>
-          <div>
-            <h1>Sin permisos</h1>
-            <p>No tienes permisos para acceder al panel de control.</p>
-            <p>
-              Regresa al <Link to="/">inicio</Link> o inicia sesión con una cuenta con privilegios de
-              administrador.
-            </p>
+      <main className={`page ${styles.page}`}>
+        <section className={styles.card} role="alert" aria-live="assertive">
+          <div className={styles.header}>
+            <span className={styles.icon} aria-hidden>
+              ⚠
+            </span>
+            <div>
+              <h1>Sin permisos</h1>
+              <p>No tienes permisos para acceder al panel de control.</p>
+              <p>
+                Regresa al <Link to="/">inicio</Link> o inicia sesión con una cuenta con privilegios de
+                administrador.
+              </p>
+            </div>
           </div>
-          <div className="card-actions card-actions--start">
-            <button type="button" className="btn btn-primary" onClick={handleSwitchAccount}>
+          <div className={styles.actions}>
+            <button type="button" className="button button--primary" onClick={handleSwitchAccount}>
               Cambiar de cuenta
             </button>
-            <Link to="/" className="btn btn-outline">
+            <Link to="/" className="button button--ghost">
               Volver al inicio
             </Link>
           </div>

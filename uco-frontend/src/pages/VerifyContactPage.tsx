@@ -2,6 +2,7 @@ import { FormEvent, useEffect, useMemo, useState } from 'react'
 import { isAxiosError } from 'axios'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { verifyContactCode } from '../api/verification'
+import styles from './VerifyContactPage.module.css'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const PHONE_REGEX = /^\+[0-9]{7,15}$/
@@ -99,25 +100,26 @@ const VerifyContactPage = () => {
   }
 
   return (
-    <main className="page" aria-labelledby="verify-title">
-      <section className="card" role="presentation">
-        <header>
-          <h1 id="verify-title">Verificar contacto</h1>
-          <p>
-            Ingresa el <strong>correo</strong> o <strong>número</strong> (formato +57...) y el{' '}
-            <strong>código de 6 dígitos</strong> que recibiste.
+    <main className={`page ${styles.page}`} aria-labelledby="verify-title">
+      <section className={styles.card} role="presentation">
+        <header className={styles.header}>
+          <h1 id="verify-title" className={styles.title}>
+            Verificar contacto
+          </h1>
+          <p className={styles.description}>
+            Ingresa el correo o número (formato +57...) y el código de 6 dígitos que recibiste para confirmar el contacto.
           </p>
         </header>
 
-        <form className="form" onSubmit={handleSubmit} noValidate>
-          <div className={`form-control${errorField === 'contact' ? ' form-control--error' : ''}`}>
-            <label htmlFor="contact">Correo o número</label>
+        <form className={styles.form} onSubmit={handleSubmit} noValidate>
+          <div className={`${styles.field} ${errorField === 'contact' ? styles.fieldError : ''}`}>
+            <span className={styles.label}>Correo o número</span>
             <input
               id="contact"
               type="text"
               inputMode="text"
               autoComplete="username"
-              placeholder="ej: usuario@uco.edu.co o +57300..."
+              placeholder="usuario@uco.edu.co o +57300..."
               value={contact}
               onChange={(event) => {
                 setContact(event.target.value)
@@ -129,11 +131,12 @@ const VerifyContactPage = () => {
               aria-describedby={error ? 'verify-error' : undefined}
               aria-invalid={errorField === 'contact' ? true : undefined}
               required
+              className={styles.control}
             />
           </div>
 
-          <div className={`form-control${errorField === 'code' ? ' form-control--error' : ''}`}>
-            <label htmlFor="code">Código de verificación (6 dígitos)</label>
+          <div className={`${styles.field} ${errorField === 'code' ? styles.fieldError : ''}`}>
+            <span className={styles.label}>Código de verificación</span>
             <input
               id="code"
               type="text"
@@ -151,20 +154,20 @@ const VerifyContactPage = () => {
               }}
               aria-describedby={error ? 'verify-error' : undefined}
               aria-invalid={errorField === 'code' ? true : undefined}
-              className="otp-input"
+              className={`${styles.control} ${styles.codeInput}`.trim()}
               required
             />
           </div>
 
           {error && (
-            <div id="verify-error" className="alert alert--error" role="alert">
-              <span aria-hidden>⚠️</span>
+            <div id="verify-error" className={styles.errorMessage} role="alert">
+              <span aria-hidden>⚠</span>
               <span>{error}</span>
             </div>
           )}
 
-          <div className="card-actions card-actions--start">
-            <button type="submit" className="btn btn-primary" disabled={!canSubmit}>
+          <div className={styles.actions}>
+            <button type="submit" className="button button--primary" disabled={!canSubmit}>
               {loading ? 'Verificando...' : 'Verificar'}
             </button>
           </div>

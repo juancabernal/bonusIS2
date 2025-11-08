@@ -58,11 +58,14 @@ function DebugTokenButton() {
         position: 'fixed',
         bottom: 20,
         right: 20,
-        background: '#007bff',
-        color: '#fff',
-        padding: '10px 16px',
-        border: 'none',
-        borderRadius: '8px',
+        background: 'rgba(108, 99, 255, 0.16)',
+        color: 'var(--color-text-primary)',
+        padding: '0.6rem 1.1rem',
+        border: '1px solid rgba(108, 99, 255, 0.4)',
+        borderRadius: '12px',
+        boxShadow: '0 18px 40px rgba(3, 5, 12, 0.4)',
+        backdropFilter: 'blur(8px)',
+        fontWeight: 600,
         cursor: 'pointer',
         zIndex: 1000,
       }}
@@ -101,56 +104,59 @@ const App = () => {
   return (
     <ErrorBoundary>
       <div className="app-shell">
-        <header className="app-header">
-          <div className="app-header__group">
-            <NavLink to="/" className="brand" aria-label="Ir al inicio de UCO Challenge">
-              <span className="brand__dot" aria-hidden />
-              <span>UCO Challenge</span>
+        <header className="shell-header">
+          <div className="shell-header__group">
+            <NavLink to="/" className="shell-header__brand" aria-label="Ir al inicio de UCO Challenge">
+              <span className="shell-header__brand-mark" aria-hidden />
+              <span>UCO Control</span>
             </NavLink>
+
+            <nav className="shell-header__nav" aria-label="Navegación principal">
+              <NavLink to="/" className={({ isActive }) => `shell-header__nav-link${isActive ? ' is-active' : ''}`}>
+                Inicio
+              </NavLink>
+              <NavLink
+                to="/dashboard"
+                className={({ isActive }) => `shell-header__nav-link${isActive ? ' is-active' : ''}`}
+              >
+                Panel
+              </NavLink>
+              <NavLink
+                to="/users"
+                className={({ isActive }) => `shell-header__nav-link${isActive ? ' is-active' : ''}`}
+              >
+                Usuarios
+              </NavLink>
+            </nav>
           </div>
 
-          <nav className="app-nav" aria-label="Navegación principal">
-            <NavLink to="/" className={({ isActive }) => `app-nav__link${isActive ? ' is-active' : ''}`}>
-              Inicio
-            </NavLink>
-            <NavLink
-              to="/dashboard"
-              className={({ isActive }) => `app-nav__link${isActive ? ' is-active' : ''}`}
-            >
-              Panel
-            </NavLink>
-            <NavLink to="/users" className={({ isActive }) => `app-nav__link${isActive ? ' is-active' : ''}`}>
-              Usuarios
-            </NavLink>
-          </nav>
-
           {isAuthenticated ? (
-            <div className="app-user" aria-live="polite">
-              <span className="app-user__avatar" aria-hidden>
+            <div className="shell-user" aria-live="polite">
+              <span className="shell-user__avatar" aria-hidden>
                 {avatarLetter}
               </span>
-              <span className="app-user__name">{user?.name ?? user?.email}</span>
+              <span className="shell-user__name">{user?.name ?? user?.email}</span>
               <button
                 onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
-                className="logout-btn"
+                className="button button--ghost"
                 type="button"
               >
                 Cerrar sesión
               </button>
             </div>
           ) : (
-            <span className="app-guest">Invitado</span>
+            <span className="shell-guest">Invitado</span>
           )}
         </header>
 
-        <div className="app-content">
+        <main className="shell-main">
           <AppRouter />
-        </div>
+        </main>
 
-        <footer className="app-footer">
+        <footer className="shell-footer">
           <p>
-            © {new Date().getFullYear()} UCO Challenge. Construido con seguridad Auth0 y microservicios
-            orquestados.
+            © {new Date().getFullYear()} Operación UCO. Plataforma segura gestionada con Auth0 y
+            microservicios.
           </p>
         </footer>
 

@@ -1,69 +1,52 @@
 .container {
-  display: flex;
-  flex-direction: column;
-  gap: 1.2rem;
-  padding-top: 1.75rem;
-  border-top: 1px solid rgba(148, 163, 184, 0.2);
+  display: grid;
+  gap: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-border);
 }
 
 .summary {
-  font-size: 0.95rem;
-  color: rgba(226, 232, 240, 0.7);
-  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
 }
 
 .controls {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.6rem;
-  align-items: center;
+  gap: 0.5rem;
   justify-content: center;
 }
 
 .button {
-  border: 1px solid rgba(148, 163, 184, 0.35);
-  background: rgba(15, 23, 42, 0.55);
-  color: rgba(226, 232, 240, 0.8);
-  padding: 0.5rem 0.95rem;
-  border-radius: 12px;
+  min-width: 2.4rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--color-border);
+  background: rgba(11, 14, 24, 0.8);
+  color: var(--color-text-muted);
   font-weight: 600;
-  font-size: 0.9rem;
-  min-width: 2.35rem;
-  text-align: center;
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
 .button:hover:not(:disabled) {
-  background: rgba(56, 189, 248, 0.18);
-  color: #e0f2fe;
-  box-shadow: 0 14px 30px rgba(2, 6, 23, 0.45);
-  transform: translateY(-1px);
+  background: rgba(108, 99, 255, 0.12);
+  color: var(--color-text-primary);
+  border-color: rgba(108, 99, 255, 0.35);
 }
 
 .button:disabled {
   opacity: 0.45;
   cursor: not-allowed;
-  box-shadow: none;
 }
 
 .active {
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.95), rgba(129, 140, 248, 0.85));
+  background: var(--color-accent);
   border-color: transparent;
-  color: #020617;
-  box-shadow: 0 18px 40px rgba(56, 189, 248, 0.35);
-}
-
-.button:focus-visible {
-  outline: 2px solid rgba(56, 189, 248, 0.75);
-  outline-offset: 2px;
+  color: #fff;
 }
 
 @media (max-width: 640px) {
-  .container {
-    align-items: stretch;
-  }
-
   .summary {
     text-align: center;
   }
