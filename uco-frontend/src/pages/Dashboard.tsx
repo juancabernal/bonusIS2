@@ -11,7 +11,10 @@ const Dashboard = () => {
       <header className="page-header">
         <div>
           <h1>Panel de control</h1>
-          <p>Administra usuarios y mantén tu organización sincronizada.</p>
+          <p>
+            Visualiza la salud operativa de Uco Challenge y accede rápidamente a los flujos críticos del
+            ecosistema.
+          </p>
         </div>
         <div className="page-actions">
           <Link to="/users/new" className="btn btn-accent">
@@ -21,24 +24,43 @@ const Dashboard = () => {
         </div>
       </header>
 
-      <section className="card-grid">
+      <section className="card-grid" style={{ marginBottom: '2.5rem' }}>
         <article className="card card--accent">
           <span className="badge" aria-label="Cuenta activa">
             ✅ Sesión activa
           </span>
-          <h2 style={{ marginBottom: '0.5rem' }}>Hola, {displayName}</h2>
+          <h2 style={{ marginBottom: '0.75rem' }}>Hola, {displayName}</h2>
           <p>
-            Tu cuenta está conectada correctamente. Desde este panel puedes revisar la lista completa de
-            usuarios, registrar nuevos perfiles y actualizar la información existente.
+            Tu sesión Auth0 está sincronizada y lista para administrar usuarios, validaciones y catálogos
+            oficiales desde un solo lugar.
           </p>
         </article>
 
+        <article className="card" style={{ background: 'rgba(59, 130, 246, 0.18)' }}>
+          <span className="metric-title">Usuarios totales</span>
+          <p className="metric-value">—</p>
+          <p style={{ margin: 0 }}>
+            Consulta el detalle completo en la vista de usuarios para acceder a verificaciones y acciones
+            rápidas.
+          </p>
+        </article>
+
+        <article className="card" style={{ background: 'rgba(56, 189, 248, 0.18)' }}>
+          <span className="metric-title">Contactos verificados</span>
+          <p className="metric-value">—</p>
+          <p style={{ margin: 0 }}>
+            Mantén correos y móviles confiables con el flujo de código OTP integrado en el sistema.
+          </p>
+        </article>
+      </section>
+
+      <section className="card-grid">
         <article className="card">
-          <h3>Próximos pasos</h3>
+          <h3>Acciones rápidas</h3>
           <ul>
-            <li>Consulta el listado de usuarios activos.</li>
-            <li>Revisa los datos antes de realizar cambios.</li>
-            <li>Apóyate en el registro guiado para nuevos usuarios.</li>
+            <li>Explora el listado de usuarios y filtra por verificación.</li>
+            <li>Registra nuevos perfiles con validaciones en tiempo real.</li>
+            <li>Refresca catálogos de identificación y ubicación cuando sea necesario.</li>
           </ul>
           <div className="card-actions card-actions--start">
             <Link to="/users" className="btn btn-primary">
@@ -48,16 +70,24 @@ const Dashboard = () => {
         </article>
 
         <article className="card">
-          <h3>¿Necesitas ayuda?</h3>
+          <h3>Soporte y monitoreo</h3>
           <p>
-            El equipo de soporte está disponible para resolver tus dudas. Consulta la documentación interna
-            o escribe a soporte@uco.edu.co.
+            ¿Dudas con la verificación o con los microservicios? Documentamos cada flujo. Comunícate con
+            soporte@uco.edu.co para escalamientos inmediatos.
           </p>
           <div className="card-actions card-actions--start">
             <Link to="/" className="btn btn-outline">
               Volver al inicio
             </Link>
           </div>
+        </article>
+
+        <article className="card" style={{ background: 'rgba(148, 163, 184, 0.15)' }}>
+          <h3>Próximos lanzamientos</h3>
+          <p>
+            Roadmap preparado para dashboards analíticos, filtros avanzados y auditoría en tiempo real.
+            Mantente atento a las próximas iteraciones.
+          </p>
         </article>
       </section>
     </main>

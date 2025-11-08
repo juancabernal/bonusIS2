@@ -1,101 +1,113 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(4px);
+  background: rgba(2, 6, 23, 0.7);
+  backdrop-filter: blur(12px) saturate(160%);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  padding: 2rem 1rem;
 }
 
 .container {
-  width: 420px;
-  max-width: 92%;
-  background: #fff;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  width: 480px;
+  max-width: 95%;
+  background: linear-gradient(160deg, rgba(15, 23, 42, 0.92), rgba(30, 58, 138, 0.75));
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 32px 65px rgba(2, 6, 23, 0.55);
   text-align: center;
-  animation: fadeIn 0.2s ease-in-out;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  animation: fadeIn 0.25s ease-in-out;
 }
 
 .title {
-  font-size: 1.125rem;
+  font-size: 1.2rem;
   font-weight: 700;
-  color: #1f2937;
-  margin: 0 0 8px;
+  color: #f8fafc;
+  margin: 0 0 0.75rem;
 }
 
 .text {
-  color: #4b5563;
-  margin: 0 0 16px;
+  color: rgba(226, 232, 240, 0.75);
+  margin: 0 0 1.25rem;
 }
 
 .input {
   width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 10px;
-  font-size: 1.125rem;
+  padding: 12px 16px;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 12px;
+  font-size: 1.3rem;
   text-align: center;
-  letter-spacing: 0.35em;
+  letter-spacing: 0.4em;
   outline: none;
-  transition: box-shadow 0.2s, border-color 0.2s;
+  background: rgba(15, 23, 42, 0.7);
+  color: #f8fafc;
+  transition: box-shadow 0.2s, border-color 0.2s, background 0.2s;
 }
 
 .input:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+  border-color: rgba(56, 189, 248, 0.8);
+  box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.25);
+  background: rgba(15, 23, 42, 0.9);
 }
 
 .actions {
-  margin-top: 18px;
+  margin-top: 22px;
   display: flex;
   justify-content: center;
-  gap: 12px;
+  gap: 14px;
 }
 
 .btnCancel {
-  background: #f3f4f6;
-  color: #374151;
+  background: rgba(15, 23, 42, 0.6);
+  color: rgba(226, 232, 240, 0.8);
   font-weight: 600;
-  padding: 8px 14px;
-  border-radius: 10px;
-  border: none;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
   cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
 .btnCancel:hover {
-  background: #e5e7eb;
+  background: rgba(15, 23, 42, 0.8);
+  color: #f8fafc;
+  transform: translateY(-1px);
 }
 
 .btnConfirm {
-  background: #2563eb;
-  color: #fff;
-  font-weight: 600;
-  padding: 8px 14px;
-  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.95), rgba(129, 140, 248, 0.9));
+  color: #020617;
+  font-weight: 700;
+  padding: 10px 18px;
+  border-radius: 999px;
   border: none;
   cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  min-width: 9rem;
 }
 
 .btnConfirm:hover {
-  background: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 18px 35px rgba(56, 189, 248, 0.35);
 }
 
 .btnConfirm:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: scale(0.98);
+    transform: translateY(10px) scale(0.98);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(0) scale(1);
   }
 }

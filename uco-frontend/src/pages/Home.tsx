@@ -4,16 +4,28 @@ import LogoutButton from '../components/LogoutButton'
 
 const featureCards = [
   {
-    title: 'Gestión centralizada',
-    description: 'Administra los usuarios de manera ágil con un panel intuitivo y accesible.',
+    title: 'Operaciones bajo control',
+    description:
+      'Monitorea usuarios, verificaciones y catálogos clave desde una consola unificada con datos al instante.',
+    icon: '🛰️',
   },
   {
-    title: 'Roles y permisos seguros',
-    description: 'Mantén el control con accesos protegidos por Auth0 y políticas claras.',
+    title: 'Seguridad empresarial',
+    description:
+      'Protección Auth0 end-to-end, sesiones seguras y flujos de verificación que refuerzan la confianza.',
+    icon: '🛡️',
   },
   {
-    title: 'Integración lista para usar',
-    description: 'Conecta con los servicios de la UCO y obtén información en tiempo real.',
+    title: 'Ecosistema conectado',
+    description:
+      'Integración directa con microservicios UCO. Consulta identificaciones, ubicaciones y más sin salir del panel.',
+    icon: '🔗',
+  },
+  {
+    title: 'Listo para escalar',
+    description:
+      'Arquitectura cloud-native, métricas claras y experiencias responsivas para equipos ágiles.',
+    icon: '🚀',
   },
 ]
 
@@ -26,10 +38,10 @@ const Home = () => {
       <section className="home-hero">
         <div>
           <span className="home-hero__badge">👋 Hola {isAuthenticated ? displayName : 'bienvenido'}</span>
-          <h1 className="home-hero__title">Plataforma administrativa UCO</h1>
+          <h1 className="home-hero__title">Gestiona Uco Challenge con precisión milimétrica</h1>
           <p className="home-hero__subtitle">
-            Gestiona usuarios, mantén los permisos bajo control y supervisa toda la operación desde un
-            panel moderno pensado para la productividad.
+            Una experiencia administrativa pensada para startups de alto crecimiento: oscura, elegante y
+            con la potencia que tu operación necesita para mantenerse sincronizada.
           </p>
           <div className="home-hero__actions">
             {isAuthenticated ? (
@@ -55,10 +67,43 @@ const Home = () => {
       <section className="feature-grid">
         {featureCards.map((feature) => (
           <article key={feature.title} className="card feature-card">
+            <span aria-hidden style={{ fontSize: '1.75rem' }}>
+              {feature.icon}
+            </span>
             <h3>{feature.title}</h3>
             <p>{feature.description}</p>
           </article>
         ))}
+      </section>
+
+      <section className="card" style={{ marginTop: '3rem' }}>
+        <header className="page-header" style={{ marginBottom: '1.5rem' }}>
+          <div>
+            <h2 style={{ margin: 0 }}>Conectado con la Universidad Cooperativa de Colombia</h2>
+            <p>
+              Integraciones vivas con catálogos de identificación, ubicaciones y validaciones de contacto
+              para garantizar datos confiables en cada registro.
+            </p>
+          </div>
+        </header>
+
+        <div className="card-grid">
+          <article className="card" style={{ background: 'rgba(15, 118, 110, 0.2)' }}>
+            <span className="metric-title">Integraciones clave</span>
+            <p className="metric-value">+6</p>
+            <p style={{ margin: 0 }}>Microservicios sincronizados en tiempo real mediante el API Gateway.</p>
+          </article>
+          <article className="card" style={{ background: 'rgba(59, 130, 246, 0.18)' }}>
+            <span className="metric-title">Verificaciones seguras</span>
+            <p className="metric-value">OTP</p>
+            <p style={{ margin: 0 }}>Flujos de email y SMS con feedback inmediato para usuarios confiables.</p>
+          </article>
+          <article className="card" style={{ background: 'rgba(124, 58, 237, 0.2)' }}>
+            <span className="metric-title">Disponibilidad</span>
+            <p className="metric-value">24/7</p>
+            <p style={{ margin: 0 }}>Arquitectura preparada para escalar sin interrumpir la operación.</p>
+          </article>
+        </div>
       </section>
     </main>
   )

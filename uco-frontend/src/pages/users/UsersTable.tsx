@@ -31,6 +31,8 @@ const UsersTable = ({ data, onConfirmEmail, onConfirmMobile }: UsersTableProps) 
               const mobileConfirmed = Boolean(user.mobileNumberConfirmed)
               const canConfirmEmail = !emailConfirmed
               const canConfirmMobile = Boolean(mobileNumber) && !mobileConfirmed
+              const emailStatusLabel = emailConfirmed ? 'Correo verificado' : 'Correo pendiente'
+              const mobileStatusLabel = mobileConfirmed ? 'Móvil verificado' : 'Móvil pendiente'
 
               return (
                 <tr key={user.id}>
@@ -45,8 +47,12 @@ const UsersTable = ({ data, onConfirmEmail, onConfirmMobile }: UsersTableProps) 
                         }`.trim()}
                         role="status"
                         aria-live="polite"
+                        aria-label={emailStatusLabel}
                       >
-                        {emailConfirmed ? 'Correo ✅' : 'Correo ⌛'}
+                        <span className={styles.statusBadgeIcon} aria-hidden>
+                          {emailConfirmed ? '✅' : '⌛'}
+                        </span>
+                        <span>{emailStatusLabel}</span>
                       </span>
                       <span
                         className={`${styles.statusBadge} ${
@@ -54,8 +60,12 @@ const UsersTable = ({ data, onConfirmEmail, onConfirmMobile }: UsersTableProps) 
                         }`.trim()}
                         role="status"
                         aria-live="polite"
+                        aria-label={mobileStatusLabel}
                       >
-                        {mobileConfirmed ? 'Móvil ✅' : 'Móvil ⌛'}
+                        <span className={styles.statusBadgeIcon} aria-hidden>
+                          {mobileConfirmed ? '✅' : '⌛'}
+                        </span>
+                        <span>{mobileStatusLabel}</span>
                       </span>
                     </div>
                   </td>
