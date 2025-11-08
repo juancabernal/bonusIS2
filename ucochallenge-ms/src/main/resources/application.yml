@@ -34,7 +34,12 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: https://dev-qyb588fnz01iw3kn.us.auth0.com/  # TODO completar dominio Auth0 (con barra final)
+          issuer-uri: https://dev-qyb588fnz01iw3kn.us.auth0.com/
+
+  # 🚫 Desactiva integración automática con Docker Compose
+  docker:
+    compose:
+      enabled: false
 
 logging:
   level:
@@ -45,7 +50,7 @@ logging:
     reactor.netty: WARN
 
 jwt:
-  expected-audience: https://uco-challenge-api            # TODO completar con el Identifier de Auth0
+  expected-audience: https://uco-challenge-api
 
 security:
   gateway:
@@ -69,7 +74,6 @@ azure:
 
 # ============================================================
 # 📊 MÉTRICAS / PROMETHEUS / GRAFANA
-# (Añadido sin modificar nada de lo anterior)
 # ============================================================
 management:
   metrics:
@@ -80,15 +84,15 @@ management:
       exposure:
         include: info,health,prometheus
 
-# =========================
-# Redis / Cache
-# =========================
+# ============================================================
+# 🧠 Redis / Cache
+# ============================================================
 ---
 spring:
   cache:
     type: redis
     redis:
-      time-to-live: 300000   # TTL por defecto para @Cacheable (5 min)
+      time-to-live: 300000
   data:
     redis:
       host: ${REDIS_HOST:localhost}
@@ -97,7 +101,7 @@ spring:
 uco:
   cache:
     users:
-      ttl-seconds: 300       # TTL específico para cache de usuarios
+      ttl-seconds: 300
     messages:
       ttl-seconds: 900
     parameters:
