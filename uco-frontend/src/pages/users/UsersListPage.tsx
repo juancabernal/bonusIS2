@@ -1,8 +1,7 @@
 import { ChangeEvent, useDeferredValue, useEffect, useMemo, useState } from 'react'
-import { Link, useLocation, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { isAxiosError } from 'axios'
 import { toast } from 'react-toastify'
-import { getUsers } from '../../api/users'
 import { sendVerificationCode } from '../../api/verification'
 import { parseApiError } from '../../utils/parseApiError'
 import EmptyState from '../../components/ui/EmptyState'
@@ -13,7 +12,8 @@ import Pagination from '../../components/ui/Pagination'
 import VerificationModal from '../../components/VerificationModal'
 import UsersTable from './UsersTable'
 import styles from './UsersListPage.module.css'
-import type { UsersPage, VerificationAction, VerificationChannel } from './types'
+import type { VerificationAction, VerificationChannel } from './types'
+import { useUsers } from '@/hooks/useUsers'
 
 type ModalState = {
   open: boolean
@@ -40,10 +40,7 @@ const sanitizeSize = (value: string | null) => {
 
 const UsersListPage = () => {
   const [searchParams, setSearchParams] = useSearchParams()
-  const [data, setData] = useState<UsersPage | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [refreshIndex, setRefreshIndex] = useState(0)
+  const navigate = useNavigate()
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
   const [query, setQuery] = useState('')
   const [modal, setModal] = useState<ModalState>({
@@ -57,6 +54,22 @@ const UsersListPage = () => {
 
   const page = useMemo(() => sanitizePage(searchParams.get('page')), [searchParams])
   const size = useMemo(() => sanitizeSize(searchParams.get('size')), [searchParams])
+
+  const {
+    data,
+    loading,
+    error: loadError,
+    reload,
+    lastUpdated: usersLastUpdated,
+  } = useUsers(page, size)
+
+  const [showUsersBadge, setShowUsersBadge] = useState(false)
+  useEffect(() => {
+    if (!usersLastUpdated) return
+    setShowUsersBadge(true)
+    const t = setTimeout(() => setShowUsersBadge(false), 1500)
+    return () => clearTimeout(t)
+  }, [usersLastUpdated])
 
   useEffect(() => {
     const next = new URLSearchParams(searchParams)
@@ -77,42 +90,6 @@ const UsersListPage = () => {
     }
   }, [page, size, searchParams, setSearchParams])
 
-  useEffect(() => {
-    let cancelled = false
-
-    const load = async () => {
-      setLoading(true)
-      setError(null)
-      setFeedback(null)
-
-      try {
-        const response = (await getUsers(page, size)) as UsersPage
-        if (!cancelled) {
-          setData(response)
-        }
-      } catch (err) {
-        console.error(err)
-        if (isAxiosError(err)) {
-          console.error(err.response?.data)
-        }
-        if (!cancelled) {
-          setError('No se pudo cargar la lista de usuarios. Intenta nuevamente en unos segundos.')
-          setData(null)
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false)
-        }
-      }
-    }
-
-    void load()
-
-    return () => {
-      cancelled = true
-    }
-  }, [page, size, refreshIndex])
-
   const handlePageChange = (nextPage: number) => {
     const next = new URLSearchParams(searchParams)
     next.set('page', String(nextPage))
@@ -131,12 +108,9 @@ const UsersListPage = () => {
     setQuery(event.target.value)
   }
 
-  const reloadUsers = () => {
-    setRefreshIndex((value) => value + 1)
-  }
-
   const handleRetry = () => {
-    reloadUsers()
+    setFeedback(null)
+    reload()
   }
 
   const totalUsers = data?.totalElements ?? 0
@@ -179,12 +153,27 @@ const UsersListPage = () => {
       ? `${filteredCount} coincidencias en esta página.`
       : `${pageCount} registros visibles.`
 
-  const refreshSignal = (location.state as { refresh?: number } | null)?.refresh
+  const locationState = location.state as
+    | { refresh?: number; feedback?: { type: 'success' | 'error'; message: string } }
+    | null
 
   useEffect(() => {
-    if (!refreshSignal) return
-    setRefreshIndex((value) => value + 1)
-  }, [refreshSignal])
+    if (!locationState) {
+      return
+    }
+
+    if (locationState.refresh) {
+      reload()
+    }
+
+    if (locationState.feedback) {
+      setFeedback(locationState.feedback)
+    }
+
+    if (locationState.refresh || locationState.feedback) {
+      navigate(`${location.pathname}${location.search}`, { replace: true })
+    }
+  }, [locationState, location.pathname, location.search, navigate, reload])
 
   useEffect(() => {
     if (!feedback) return
@@ -253,7 +242,7 @@ const UsersListPage = () => {
   }
 
   const handleVerified = () => {
-    reloadUsers()
+    reload()
     setFeedback({ type: 'success', message: 'Contacto verificado correctamente.' })
   }
 
@@ -308,7 +297,14 @@ const UsersListPage = () => {
       </header>
 
       <section className={styles.summaryCard} aria-live="polite">
-        <span className={styles.summaryLabel}>Usuarios totales</span>
+        <span className={styles.summaryLabel}>
+          Usuarios totales
+          {showUsersBadge ? (
+            <span className={`${styles.updateBadge} ${styles.updateBadgeBlink}`} aria-hidden>
+              Actualizado
+            </span>
+          ) : null}
+        </span>
         <p className={styles.summaryValue}>{totalUsers}</p>
         <p
           className={styles.summaryHelper}
@@ -338,9 +334,9 @@ const UsersListPage = () => {
           </section>
         )}
 
-        {!loading && error && (
+        {!loading && loadError && (
           <ErrorAlert
-            message={error}
+            message={loadError}
             actions={
               <>
                 <button type="button" className="button button--primary" onClick={handleRetry} aria-label="Reintentar carga">
@@ -358,15 +354,15 @@ const UsersListPage = () => {
           </ErrorAlert>
         )}
 
-        {!loading && !error && pageCount === 0 && (
+        {!loading && !loadError && pageCount === 0 && (
           <EmptyState description="No hay usuarios registrados todavía." />
         )}
 
-        {!loading && !error && pageCount > 0 && hasQuery && filteredCount === 0 && (
+        {!loading && !loadError && pageCount > 0 && hasQuery && filteredCount === 0 && (
           <EmptyState title="Sin coincidencias" description="No se encontraron usuarios para esta búsqueda." />
         )}
 
-        {!loading && !error && filteredCount > 0 && (
+        {!loading && !loadError && filteredCount > 0 && (
           <UsersTable
             data={filteredUsers}
             pendingAction={pendingAction}
@@ -385,7 +381,7 @@ const UsersListPage = () => {
         )}
       </div>
 
-      {!loading && !error && data ? (
+      {!loading && !loadError && data ? (
         <footer className={styles.footer}>
           <Pagination page={page} size={size} totalElements={data.totalElements} onPageChange={handlePageChange} />
         </footer>

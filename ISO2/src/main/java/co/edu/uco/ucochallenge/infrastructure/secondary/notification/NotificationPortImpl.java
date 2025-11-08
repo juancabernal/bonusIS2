@@ -1,124 +1,158 @@
 package co.edu.uco.ucochallenge.infrastructure.secondary.notification;
 
-import java.time.Year;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.notificationapi.NotificationApi;
 import com.notificationapi.model.NotificationRequest;
+import com.notificationapi.model.SmsOptions;
 import com.notificationapi.model.User;
 
-import co.edu.uco.ucochallenge.crosscutting.ParamKeys;
-import co.edu.uco.ucochallenge.crosscutting.dto.ParameterDTO;
-import co.edu.uco.ucochallenge.infrastructure.secondary.cache.catalog.ParametersCatalogCache;
-import co.edu.uco.ucochallenge.domain.user.port.NotificationPort;
+import co.edu.uco.ucochallenge.crosscutting.exception.NotificationDeliveryException;
+import co.edu.uco.ucochallenge.domain.user.port.ContactConfirmationPort;
+import co.edu.uco.ucochallenge.infrastructure.secondary.persistence.jpa.entity.VerificationCodeEntity;
+import co.edu.uco.ucochallenge.infrastructure.secondary.persistence.jpa.repository.VerificationCodeRepository;
 
 @Component
-public class NotificationPortImpl implements NotificationPort {
+public class NotificationPortImpl implements ContactConfirmationPort {
 
-    private static final Logger log = LoggerFactory.getLogger(NotificationPortImpl.class);
+    private static final int CODE_UPPER_BOUND = 1_000_000;
+    private static final Logger LOGGER = LoggerFactory.getLogger(NotificationPortImpl.class);
 
     private static final String DEFAULT_ADMIN_EMAIL = "juanjosenarvaezmarin13092005@gmail.com";
+    private final NotificationApi api;
+    private final VerificationCodeRepository codeRepository;
+    private final SecureRandom random = new SecureRandom();
 
-    private static final String DUP_NOTIFICATION_ID = "duplicate_alert";
-    private static final String DUP_TEMPLATE_ID     = "predeterminado";
-
-    private final NotificationApi notificationApi;
-    private final ParametersCatalogCache parametersCatalogCache;
-
-    public NotificationPortImpl(final NotificationApi notificationApi,
-                                final ParametersCatalogCache parametersCatalogCache) {
-        this.notificationApi = notificationApi;
-        this.parametersCatalogCache = parametersCatalogCache;
+    public NotificationPortImpl(NotificationApi api, VerificationCodeRepository codeRepository) {
+        this.api = api;
+        this.codeRepository = codeRepository;
     }
 
-    private String resolveAdminEmail() {
-        final String adminEmail = parametersCatalogCache.getParameter(ParamKeys.ADMIN_EMAIL)
-                .map(ParameterDTO::value)
-                .map(String::trim)
-                .filter(v -> !v.isEmpty())
-                .defaultIfEmpty(DEFAULT_ADMIN_EMAIL)
-                .onErrorReturn(DEFAULT_ADMIN_EMAIL)
-                .block();
-        return (adminEmail == null || adminEmail.isBlank()) ? DEFAULT_ADMIN_EMAIL : adminEmail;
+    @Override
+    public void confirmEmail(String email) {
+        sendConfirmation(email, null, "Confirma tu correo electrónico - UCO Challenge");
     }
 
-    private static String currentYear() {
-        return String.valueOf(Year.now().getValue());
+    @Override
+    public void confirmMobileNumber(String mobileNumber) {
+        sendConfirmation(null, mobileNumber, "Confirma tu número móvil - UCO Challenge");
     }
 
-    private static Map<String, Object> duplicateTags(String to, String subject, String message) {
-        Map<String, Object> tags = new HashMap<>();
-        tags.put("subject", subject);
-        tags.put("message", message);
-        tags.put("to", to);
-        tags.put("channel", "email");
-        tags.put("currentYear", currentYear());
-        return tags;
-    }
-
-    // ----- Builders (solo email, siguiendo el ejemplo oficial) -----
-
-    private NotificationRequest buildDuplicateEmail(final String toEmail,
-                                                    final String subject,
-                                                    final String message) {
-        final User user = new User(toEmail).setEmail(toEmail);
-        return new NotificationRequest(DUP_NOTIFICATION_ID, user)
-                .setTemplateId(DUP_TEMPLATE_ID)
-                .setMergeTags(duplicateTags(toEmail, subject, message));
-    }
-
-    private NotificationRequest buildAdminDuplicateEmail(final String adminEmail,
-                                                         final String message) {
-        final User user = new User(adminEmail).setEmail(adminEmail);
-        return new NotificationRequest(DUP_NOTIFICATION_ID, user)
-                .setTemplateId(DUP_TEMPLATE_ID)
-                .setMergeTags(duplicateTags(adminEmail, "UCO Challenge - Correo duplicado", message));
-    }
-
-    private void trySend(final NotificationRequest request, final String context) {
+    @Transactional
+    private void sendConfirmation(String email, String number, String subject) {
         try {
-            notificationApi.send(request);
-        } catch (Exception ex) {
-            log.warn("Notification send failed ({}). Continuing without blocking. Cause={}", context, ex.toString());
+            String contact = email != null ? email : number;
+            String code = String.format("%06d", random.nextInt(CODE_UPPER_BOUND));
+
+            codeRepository.findByContact(contact).ifPresent(codeRepository::delete);
+            codeRepository.save(new VerificationCodeEntity(contact, code, LocalDateTime.now().plusMinutes(15)));
+
+            User user = new User(contact)
+                    .setEmail(email)
+                    .setNumber(number);
+
+            // ✅ Si es email, usa la plantilla "predeterminado" y pasa el token
+            if (email != null) {
+                Map<String, Object> params = new HashMap<>();
+                params.put("verificationCode", code); // Referencia {{verificationCode}} en la plantilla
+
+                NotificationRequest request = new NotificationRequest("confirmar_datos", user)
+                        .setTemplateId("predeterminado")
+                        .setParameters(params);
+
+                String response = api.send(request);
+                LOGGER.info("[NotificationAPI] Email verification code {} sent to {} | Response: {}", code, contact, response);
+                return;
+            }
+
+            // 🚫 No se toca el resto del código (SMS y demás)
+            Map<String, Object> mergeTags = new HashMap<>();
+            mergeTags.put("name", contact);
+            mergeTags.put("confirmationCode", code);
+            mergeTags.put("currentYear", "2025");
+            mergeTags.put("comment", subject);
+
+            NotificationRequest request = new NotificationRequest("confirmar_datos", user)
+                    .setTemplateId("predeterminado")
+                    .setMergeTags(mergeTags);
+
+            String response = api.send(request);
+            LOGGER.info("[NotificationAPI] Sent code {} to {} | Response: {}", code, contact, response);
+        } catch (Exception e) {
+            LOGGER.error("[NotificationAPI] Error sending code", e);
+            throw new NotificationDeliveryException("No se pudo enviar el código de verificación", e);
         }
     }
 
-    // ===== Implementación del puerto (solo email) =====.
+    public void sendCodeForChannel(String email, String number, String channel, String code) {
+        try {
+            Map<String, Object> merge = new HashMap<>();
+            String name = email != null ? email : number;
+            merge.put("name", name);
+            merge.put("confirmationCode", code);
+            merge.put("currentYear", "2025");
+            merge.put("comment", "Confirma tu contacto - UCO Challenge");
 
-    @Override
-    public void notifyAdministrator(final String message) {
-        final String admin = resolveAdminEmail();
-        trySend(buildAdminDuplicateEmail(admin, message), "notifyAdministrator");
-    }
+            if ("mobile".equalsIgnoreCase(channel)) {
+                String e164 = normalizeColombianNumber(number);
 
-    @Override
-    public void notifyExecutor(final String executorIdentifier, final String message) {
-        final String subject = "UCO Challenge - Registro duplicado";
-        if (executorIdentifier == null || !executorIdentifier.contains("@")) {
-            final String admin = resolveAdminEmail();
-            trySend(buildAdminDuplicateEmail(admin, message), "notifyExecutor(admin)");
-            return;
+                User user = new User(e164).setNumber(e164);
+
+                NotificationRequest req = new NotificationRequest("confirmar_datos", user)
+                        .setTemplateId("template_one")
+                        .setSms(new SmsOptions().setMessage("Tu código de verificación UCO Challenge es: " + code))
+                        .setMergeTags(merge);
+
+                String resp = api.send(req);
+                LOGGER.info("[NotificationAPI] SMS code sent: {}", resp);
+                return;
+            }
+
+            if ("email".equalsIgnoreCase(channel)) {
+                User user = new User(email).setEmail(email);
+
+                // ✅ Aquí también usamos la plantilla predeterminada con el token
+                Map<String, Object> params = new HashMap<>();
+                params.put("verificationCode", code);
+
+                NotificationRequest req = new NotificationRequest("confirmar_datos", user)
+                        .setTemplateId("predeterminado")
+                        .setParameters(params);
+
+                String resp = api.send(req);
+                LOGGER.info("[NotificationAPI] Email code sent: {}", resp);
+                return;
+            }
+
+            LOGGER.warn("Unknown channel '{}'", channel);
+        } catch (Exception e) {
+            LOGGER.error("[NotificationAPI] Error sending code", e);
+            throw new NotificationDeliveryException("No se pudo enviar el código de verificación", e);
         }
-        trySend(buildDuplicateEmail(executorIdentifier, subject, message), "notifyExecutor.email");
     }
+//.
+    private String normalizeColombianNumber(String number) {
+        if (number == null) {
+            return null;
+        }
 
-    @Override
-    public void notifyEmailOwner(final String email, final String message) {
-        final String subject = "UCO Challenge - Correo duplicado";
-        trySend(buildDuplicateEmail(email, subject, message), "notifyEmailOwner");
-    }
+        String digits = number.replaceAll("\\D", "");
+        if (digits.length() == 10 && digits.startsWith("3")) {
+            digits = "57" + digits;
+        }
 
-    @Override
-    public void notifyMobileOwner(final String mobileNumber, final String message) {
-        // Sin SMS: notificar por email al admin incluyendo el número en el cuerpo
-        final String admin = resolveAdminEmail();
-        final String subject = "UCO Challenge - Telefono duplicado";
-        final String body = "Numero reportado: " + String.valueOf(mobileNumber) + ". " + message;
-        trySend(buildAdminDuplicateEmail(admin, body), "notifyMobileOwner(adminOnly)");
+        if (digits.startsWith("57")) {
+            return "+" + digits;
+        }
+
+        return number;
     }
 }

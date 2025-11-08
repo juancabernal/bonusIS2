@@ -110,6 +110,37 @@
   color: var(--color-accent);
 }
 
+/* update badge used to signal small data refreshes */
+.updateBadge {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.12rem 0.45rem;
+  font-size: 0.72rem;
+  color: var(--color-accent);
+  background: rgba(108, 99, 255, 0.06);
+  border: 1px solid rgba(108, 99, 255, 0.12);
+  border-radius: 999px;
+  vertical-align: middle;
+  opacity: 0;
+}
+
+.updateBadge.blink {
+  opacity: 1;
+  animation: updatePulse 1.25s ease-out;
+}
+
+@keyframes updatePulse {
+  0% { transform: scale(0.97); box-shadow: 0 0 0 rgba(108,99,255,0); }
+  30% { transform: scale(1); box-shadow: 0 10px 24px rgba(108,99,255,0.06); }
+ 100% { transform: scale(1); box-shadow: 0 0 0 rgba(108,99,255,0); opacity: 1; }
+}
+
+/* helper class for module usage */
+.updateBadgeBlink {
+  opacity: 1;
+  animation: updatePulse 1.25s ease-out;
+}
+
 .feedback {
   border-radius: var(--radius-sm);
   border: 1px solid var(--color-border);
