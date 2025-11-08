@@ -20,6 +20,8 @@ import co.edu.uco.ucochallenge.application.user.register.dto.RegisterUserInputDT
 import co.edu.uco.ucochallenge.application.user.register.dto.RegisterUserResponseDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @Validated
 @RestController
@@ -44,36 +46,48 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public ResponseEntity<RegisterUserResponseDTO> create(@Valid @RequestBody final RegisterUserInputDTO request) {
-        final RegisterUserResponseDTO response = registerUserInteractor.execute(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    public Mono<ResponseEntity<RegisterUserResponseDTO>> create(@Valid @RequestBody final RegisterUserInputDTO request) {
+        return Mono.fromCallable(() -> {
+                    final RegisterUserResponseDTO response = registerUserInteractor.execute(request);
+                    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+                })
+                .subscribeOn(Schedulers.boundedElastic());
     }
 
     @GetMapping("/users")
-    public ResponseEntity<FindUsersByFilterOutputDTO> getUsers(
+    public Mono<ResponseEntity<FindUsersByFilterOutputDTO>> getUsers(
             @RequestParam(name = "page", required = false) final Integer page,
             @RequestParam(name = "size", required = false) final Integer size) {
-        final var normalizedInput = FindUsersByFilterInputDTO.normalize(page, size);
-        final var response = findUsersByFilterInteractor.execute(normalizedInput);
-        return ResponseEntity.ok(response);
+        return Mono.fromCallable(() -> {
+                    final var normalizedInput = FindUsersByFilterInputDTO.normalize(page, size);
+                    final var response = findUsersByFilterInteractor.execute(normalizedInput);
+                    return ResponseEntity.ok(response);
+                })
+                .subscribeOn(Schedulers.boundedElastic());
     }
 
     @PostMapping("/users/{id}/send-code")
-    public ResponseEntity<Void> sendCode(@PathVariable UUID id,
-                                         @RequestParam("channel") String channel,
-                                         HttpServletRequest req) {
+    public Mono<ResponseEntity<Void>> sendCode(@PathVariable UUID id,
+                                               @RequestParam("channel") String channel,
+                                               HttpServletRequest req) {
         log.info("send-code hit: {} {} channel={}", req.getMethod(), req.getRequestURI(), channel);
-        final VerificationChannel verificationChannel = VerificationChannel.from(channel);
-        sendVerificationCodeService.sendVerificationCode(id, verificationChannel);
-        return ResponseEntity.accepted().build();
+        return Mono.fromCallable(() -> {
+                    final VerificationChannel verificationChannel = VerificationChannel.from(channel);
+                    sendVerificationCodeService.sendVerificationCode(id, verificationChannel);
+                    return ResponseEntity.accepted().build();
+                })
+                .subscribeOn(Schedulers.boundedElastic());
     }
 
     @PostMapping("/users/{id}/confirm-code")
-    public ResponseEntity<ConfirmVerificationCodeResponseDTO> confirmCode(
+    public Mono<ResponseEntity<ConfirmVerificationCodeResponseDTO>> confirmCode(
             @PathVariable UUID id,
             @Valid @RequestBody final ConfirmVerificationCodeRequestDTO request) {
-        final VerificationChannel channel = VerificationChannel.from(request.channel());
-        userContactConfirmationService.confirmVerificationCode(id, channel, request.code());
-        return ResponseEntity.ok(new ConfirmVerificationCodeResponseDTO(true));
+        return Mono.fromCallable(() -> {
+                    final VerificationChannel channel = VerificationChannel.from(request.channel());
+                    userContactConfirmationService.confirmVerificationCode(id, channel, request.code());
+                    return ResponseEntity.ok(new ConfirmVerificationCodeResponseDTO(true));
+                })
+                .subscribeOn(Schedulers.boundedElastic());
     }
 }

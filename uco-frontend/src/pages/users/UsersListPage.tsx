@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useMemo, useState } from 'react'
+import { ChangeEvent, useDeferredValue, useEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import { isAxiosError } from 'axios'
 import { toast } from 'react-toastify'
@@ -13,30 +13,13 @@ import Pagination from '../../components/ui/Pagination'
 import VerificationModal from '../../components/VerificationModal'
 import UsersTable from './UsersTable'
 import styles from './UsersListPage.module.css'
+import type { UsersPage, VerificationAction, VerificationChannel } from './types'
 
 type ModalState = {
   open: boolean
   userId: string
-  channel: 'email' | 'mobile'
+  channel: VerificationChannel
   targetLabel?: string
-}
-
-interface UserSummary {
-  id: string
-  firstName: string
-  lastName?: string | null
-  email: string
-  documentNumber?: string | null
-  mobileNumber?: string | null
-  emailConfirmed?: boolean | null
-  mobileNumberConfirmed?: boolean | null
-}
-
-interface UsersPage {
-  users: UserSummary[]
-  page: number
-  size: number
-  totalElements: number
 }
 
 const PAGE_SIZES = [10, 20, 30, 50]
@@ -69,6 +52,7 @@ const UsersListPage = () => {
     channel: 'email',
     targetLabel: '',
   })
+  const [pendingAction, setPendingAction] = useState<VerificationAction | null>(null)
   const location = useLocation()
 
   const page = useMemo(() => sanitizePage(searchParams.get('page')), [searchParams])
@@ -158,8 +142,9 @@ const UsersListPage = () => {
   const totalUsers = data?.totalElements ?? 0
   const users = data?.users ?? []
   const normalizedQuery = query.trim().toLowerCase()
+  const deferredQuery = useDeferredValue(normalizedQuery)
   const filteredUsers = useMemo(() => {
-    if (!normalizedQuery) {
+    if (!deferredQuery) {
       return users
     }
 
@@ -171,17 +156,28 @@ const UsersListPage = () => {
       const identifier = user.id.toLowerCase()
 
       return (
-        fullName.includes(normalizedQuery) ||
-        email.includes(normalizedQuery) ||
-        document.includes(normalizedQuery) ||
-        mobile.includes(normalizedQuery) ||
-        identifier.includes(normalizedQuery)
+        fullName.includes(deferredQuery) ||
+        email.includes(deferredQuery) ||
+        document.includes(deferredQuery) ||
+        mobile.includes(deferredQuery) ||
+        identifier.includes(deferredQuery)
       )
     })
-  }, [users, normalizedQuery])
+  }, [users, deferredQuery])
   const hasQuery = normalizedQuery.length > 0
   const pageCount = users.length
   const filteredCount = filteredUsers.length
+  const isFiltering = normalizedQuery !== deferredQuery
+  const summaryHelperMessage = isFiltering
+    ? 'Calculando coincidencias...'
+    : hasQuery
+      ? `Filtrando ${filteredCount} de ${pageCount} registros en esta página.`
+      : `Mostrando ${pageCount} registros en esta página.`
+  const searchMetaMessage = isFiltering
+    ? 'Buscando coincidencias...'
+    : hasQuery
+      ? `${filteredCount} coincidencias en esta página.`
+      : `${pageCount} registros visibles.`
 
   const refreshSignal = (location.state as { refresh?: number } | null)?.refresh
 
@@ -202,7 +198,7 @@ const UsersListPage = () => {
     }
   }, [feedback])
 
-  const handleSendCode = async (userId: string, channel: 'email' | 'mobile') => {
+  const handleSendCode = async (userId: string, channel: VerificationChannel) => {
     const sendingMessage =
       channel === 'mobile'
         ? 'Enviando código al número registrado...'
@@ -231,7 +227,7 @@ const UsersListPage = () => {
 
   const openVerificationFor = async (
     userId: string,
-    channel: 'email' | 'mobile',
+    channel: VerificationChannel,
     targetLabel?: string,
   ) => {
     if (!targetLabel) {
@@ -239,12 +235,21 @@ const UsersListPage = () => {
       return
     }
 
-    setFeedback(null)
-    const sent = await handleSendCode(userId, channel)
-    if (!sent) {
+    if (pendingAction) {
       return
     }
-    setModal({ open: true, userId, channel, targetLabel })
+
+    setFeedback(null)
+    setPendingAction({ userId, channel })
+    try {
+      const sent = await handleSendCode(userId, channel)
+      if (!sent) {
+        return
+      }
+      setModal({ open: true, userId, channel, targetLabel })
+    } finally {
+      setPendingAction(null)
+    }
   }
 
   const handleVerified = () => {
@@ -284,6 +289,14 @@ const UsersListPage = () => {
                   placeholder="Buscar por nombre, documento o correo"
                   autoComplete="off"
                 />
+                <span
+                  className={styles.searchMeta}
+                  data-busy={isFiltering ? 'true' : undefined}
+                  role="status"
+                  aria-live="polite"
+                >
+                  {searchMetaMessage}
+                </span>
               </div>
               <PageSizeSelect value={size} onChange={handleSizeChange} />
             </div>
@@ -297,10 +310,11 @@ const UsersListPage = () => {
       <section className={styles.summaryCard} aria-live="polite">
         <span className={styles.summaryLabel}>Usuarios totales</span>
         <p className={styles.summaryValue}>{totalUsers}</p>
-        <p className={styles.summaryHelper}>
-          {hasQuery
-            ? `Filtrando ${filteredCount} de ${pageCount} registros en esta página.`
-            : `Mostrando ${pageCount} registros en esta página.`}
+        <p
+          className={styles.summaryHelper}
+          data-busy={isFiltering ? 'true' : undefined}
+        >
+          {summaryHelperMessage}
         </p>
       </section>
 
@@ -355,6 +369,8 @@ const UsersListPage = () => {
         {!loading && !error && filteredCount > 0 && (
           <UsersTable
             data={filteredUsers}
+            pendingAction={pendingAction}
+            isFiltering={isFiltering}
             onConfirmEmail={(user) =>
               void openVerificationFor(user.id, 'email', user.email.trim())
             }
