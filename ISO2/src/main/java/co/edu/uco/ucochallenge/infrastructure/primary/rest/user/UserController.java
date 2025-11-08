@@ -67,7 +67,7 @@ public class UserController {
     }
 
     @PostMapping("/users/{id}/send-code")
-    public Mono<ResponseEntity<Void>> sendCode(@PathVariable UUID id,
+    public Mono<ResponseEntity<Object>> sendCode(@PathVariable UUID id,
                                                @RequestParam("channel") String channel,
                                                HttpServletRequest req) {
         log.info("send-code hit: {} {} channel={}", req.getMethod(), req.getRequestURI(), channel);

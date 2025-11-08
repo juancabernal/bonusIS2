@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import co.edu.uco.ucochallenge.crosscutting.exception.BusinessException;
 import co.edu.uco.ucochallenge.crosscutting.exception.DomainValidationException;
 import co.edu.uco.ucochallenge.crosscutting.exception.NotFoundException;
+import co.edu.uco.ucochallenge.application.user.confirm.service.UserContactConfirmationService;
 import co.edu.uco.ucochallenge.crosscutting.ParamKeys;
 import co.edu.uco.ucochallenge.crosscutting.dto.ParameterDTO;
 import co.edu.uco.ucochallenge.infrastructure.secondary.persistence.jpa.entity.UserEntity;
@@ -46,7 +47,6 @@ public class UserContactConfirmationServiceImpl implements UserContactConfirmati
     }
 
     @Transactional
-    @Override
     public void confirmVerificationCode(final UUID userId, final VerificationChannel channel, final String rawCode) {
         final UserEntity user = userRepo.findById(userId)
                 .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND_MESSAGE));

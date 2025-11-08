@@ -16,9 +16,9 @@ import com.notificationapi.model.SmsOptions;
 import com.notificationapi.model.User;
 
 import co.edu.uco.ucochallenge.crosscutting.exception.NotificationDeliveryException;
+import co.edu.uco.ucochallenge.domain.user.port.ContactConfirmationPort;
 import co.edu.uco.ucochallenge.infrastructure.secondary.persistence.jpa.entity.VerificationCodeEntity;
 import co.edu.uco.ucochallenge.infrastructure.secondary.persistence.jpa.repository.VerificationCodeRepository;
-import co.edu.uco.ucochallenge.domain.user.port.ContactConfirmationPort;
 
 @Component
 public class NotificationContactConfirmationAdapter implements ContactConfirmationPort {
