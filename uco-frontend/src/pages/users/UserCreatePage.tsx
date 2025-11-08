@@ -550,340 +550,380 @@ export default function UserCreatePage() {
       <header className="page-header">
         <div>
           <h1>Registrar usuario</h1>
-          <p>Completa la información para registrar un nuevo usuario en la plataforma.</p>
+          <p>
+            Completa la información oficial y verifica los datos clave para incorporar nuevos usuarios al
+            ecosistema Uco Challenge.
+          </p>
         </div>
       </header>
 
       <form className="form" onSubmit={onSubmit} noValidate>
-        <div className="form-grid">
-          <div
-            className={`form-control${fieldErrors.idType ? ' form-control--error' : ''}`}
-          >
-            <label htmlFor="idType">Tipo de identificación*</label>
-            <select
-              id="idType"
-              name="idType"
-              value={formState.idType ?? ''}
-              onChange={(event) => {
-                const value = event.target.value
-                setFormState((state) => ({ ...state, idType: value }))
-                setFieldErrors((prev) => {
-                  const { idType, ...rest } = prev
-                  return rest
-                })
-              }}
-              disabled={loadingIdTypes || !!errorIdTypes || idTypes.length === 0}
-              aria-label="Selecciona el tipo de documento"
-              title="Selecciona el tipo de documento"
-              required
-              className="input select"
-              aria-invalid={Boolean(fieldErrors.idType)}
+        <section className="card form-section" aria-labelledby="personal-data">
+          <header className="form-section__header">
+            <h2 id="personal-data" className="form-section__title">
+              Datos personales
+            </h2>
+            <p className="form-section__description">
+              Define la identidad oficial del usuario tal como aparece en los registros de la institución.
+            </p>
+          </header>
+
+          <div className="form-grid">
+            <div
+              className={`form-control${fieldErrors.idType ? ' form-control--error' : ''}`}
             >
-              <option value="">
-                {loadingIdTypes ? 'Cargando tipos...' : 'Selecciona un tipo'}
-              </option>
-              {idTypes.map((type) => (
-                <option key={type.id ?? type.code} value={type.code ?? type.id ?? ''}>
-                  {type.name ?? type.description ?? type.code ?? type.id}
-                </option>
-              ))}
-            </select>
-            {fieldErrors.idType ? (
-              <span className="form-error">{fieldErrors.idType}</span>
-            ) : null}
-            {loadingIdTypes ? (
-              <div className="form-helper" role="status" aria-live="polite">
-                <span
-                  className="loader__spinner"
-                  aria-hidden
-                  style={{ width: '24px', height: '24px', borderWidth: '3px' }}
-                />
-                Cargando tipos de documento...
-              </div>
-            ) : null}
-            {errorIdTypes ? (
-              <div className="alert alert--info" role="alert">
-                <span aria-hidden>ℹ️</span>
-                <div>
-                  <p style={{ margin: 0 }}>{errorIdTypes}</p>
-                  <button
-                    type="button"
-                    className="btn btn-outline"
-                    style={{ marginTop: '0.75rem' }}
-                    onClick={() => {
-                      setCountryRequestId((id) => id + 1)
-                    }}
-                  >
-                    Reintentar
-                  </button>
-                </div>
-              </div>
-            ) : null}
-            {!loadingIdTypes && !errorIdTypes && idTypes.length === 0 ? (
-              <span className="form-helper">No hay tipos de documento disponibles.</span>
-            ) : null}
-          </div>
-
-          <label
-            className={`form-control${fieldErrors.idNumber ? ' form-control--error' : ''}`}
-            htmlFor="idNumber"
-          >
-            Número de identificación*
-            <input
-              id="idNumber"
-              name="idNumber"
-              value={formState.idNumber}
-              onChange={onFieldChange}
-              onBlur={handleBlur}
-              placeholder="Ingresa el número"
-              autoComplete="off"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              required
-              aria-invalid={Boolean(fieldErrors.idNumber)}
-            />
-            {fieldErrors.idNumber ? (
-              <span className="form-error">{fieldErrors.idNumber}</span>
-            ) : null}
-          </label>
-
-          <label
-            className={`form-control${fieldErrors.firstName ? ' form-control--error' : ''}`}
-            htmlFor="firstName"
-          >
-            Primer nombre*
-            <input
-              id="firstName"
-              name="firstName"
-              value={formState.firstName}
-              onChange={onFieldChange}
-              onBlur={handleBlur}
-              placeholder="Ej. Laura"
-              autoComplete="given-name"
-              required
-              aria-invalid={Boolean(fieldErrors.firstName)}
-            />
-            {fieldErrors.firstName ? (
-              <span className="form-error">{fieldErrors.firstName}</span>
-            ) : null}
-          </label>
-
-          <label
-            className={`form-control${fieldErrors.secondName ? ' form-control--error' : ''}`}
-            htmlFor="secondName"
-          >
-            Segundo nombre
-            <input
-              id="secondName"
-              name="secondName"
-              value={formState.secondName ?? ''}
-              onChange={onFieldChange}
-              onBlur={handleBlur}
-              placeholder="Opcional"
-              autoComplete="given-name"
-            />
-            {fieldErrors.secondName ? (
-              <span className="form-error">{fieldErrors.secondName}</span>
-            ) : null}
-            <span className="form-helper">Este campo es opcional.</span>
-          </label>
-
-          <label
-            className={`form-control${fieldErrors.firstSurname ? ' form-control--error' : ''}`}
-            htmlFor="firstSurname"
-          >
-            Primer apellido*
-            <input
-              id="firstSurname"
-              name="firstSurname"
-              value={formState.firstSurname}
-              onChange={onFieldChange}
-              onBlur={handleBlur}
-              placeholder="Ej. González"
-              autoComplete="family-name"
-              required
-              aria-invalid={Boolean(fieldErrors.firstSurname)}
-            />
-            {fieldErrors.firstSurname ? (
-              <span className="form-error">{fieldErrors.firstSurname}</span>
-            ) : null}
-          </label>
-
-          <label
-            className={`form-control${fieldErrors.secondSurname ? ' form-control--error' : ''}`}
-            htmlFor="secondSurname"
-          >
-            Segundo apellido
-            <input
-              id="secondSurname"
-              name="secondSurname"
-              value={formState.secondSurname ?? ''}
-              onChange={onFieldChange}
-              onBlur={handleBlur}
-              placeholder="Opcional"
-              autoComplete="family-name"
-            />
-            {fieldErrors.secondSurname ? (
-              <span className="form-error">{fieldErrors.secondSurname}</span>
-            ) : null}
-          </label>
-
-          <label
-            className={`form-control${fieldErrors.country ? ' form-control--error' : ''}`}
-            htmlFor="country"
-          >
-            País*
-            <select
-              id="country"
-              value={selectedCountry}
-              onChange={handleCountryChange}
-              disabled={loadingCountries || countries.length === 0}
-              aria-busy={loadingCountries}
-              required
-              aria-invalid={Boolean(fieldErrors.country)}
-            >
-              <option value="">
-                {loadingCountries ? 'Cargando países...' : 'Selecciona un país'}
-              </option>
-              {countries.map((country) => (
-                <option key={country.id} value={country.id}>
-                  {country.name}
-                </option>
-              ))}
-            </select>
-            {fieldErrors.country ? (
-              <span className="form-error">{fieldErrors.country}</span>
-            ) : null}
-          </label>
-
-          <label
-            className={`form-control${fieldErrors.department ? ' form-control--error' : ''}`}
-            htmlFor="department"
-          >
-            Departamento*
-            <select
-              id="department"
-              value={selectedDepartment}
-              onChange={handleDepartmentChange}
-              disabled={!selectedCountry || loadingDepartments || departments.length === 0}
-              aria-busy={loadingDepartments}
-              required
-              aria-invalid={Boolean(fieldErrors.department)}
-            >
-              <option value="">
-                {!selectedCountry
-                  ? 'Selecciona primero un país'
-                  : loadingDepartments
-                    ? 'Cargando departamentos...'
-                    : 'Selecciona un departamento'}
-              </option>
-              {departments.map((department) => (
-                <option key={department.id} value={department.id}>
-                  {department.name}
-                </option>
-              ))}
-            </select>
-            {fieldErrors.department ? (
-              <span className="form-error">{fieldErrors.department}</span>
-            ) : null}
-          </label>
-
-          <label
-            className={`form-control${fieldErrors.homeCity ? ' form-control--error' : ''}`}
-            htmlFor="homeCity"
-          >
-            Ciudad*
-            <select
-              id="homeCity"
-              value={formState.homeCity}
-              onChange={handleCityChange}
-              disabled={!selectedDepartment || loadingCities || cities.length === 0}
-              aria-busy={loadingCities}
-              required
-              aria-invalid={Boolean(fieldErrors.homeCity)}
-            >
-              <option value="">
-                {!selectedDepartment
-                  ? 'Selecciona primero un departamento'
-                  : loadingCities
-                    ? 'Cargando ciudades...'
-                    : 'Selecciona una ciudad'}
-              </option>
-              {cities.map((city) => (
-                <option key={city.id} value={city.id}>
-                  {city.name}
-                </option>
-              ))}
-            </select>
-            {fieldErrors.homeCity ? (
-              <span className="form-error">{fieldErrors.homeCity}</span>
-            ) : null}
-          </label>
-
-          <label
-            className={`form-control${fieldErrors.email ? ' form-control--error' : ''}`}
-            htmlFor="email"
-          >
-            Correo electrónico*
-            <input
-              id="email"
-              type="email"
-              name="email"
-              value={formState.email}
-              onChange={onFieldChange}
-              onBlur={handleBlur}
-              placeholder="usuario@uco.edu.co"
-              autoComplete="email"
-              pattern={emailPattern}
-              required
-              aria-invalid={Boolean(fieldErrors.email)}
-            />
-            {fieldErrors.email ? (
-              <span className="form-error">{fieldErrors.email}</span>
-            ) : null}
-          </label>
-
-          <label
-            className={`form-control${fieldErrors.mobileNumber ? ' form-control--error' : ''}`}
-            htmlFor="mobileNumber"
-          >
-            Teléfono móvil*
-            <input
-              id="mobileNumber"
-              name="mobileNumber"
-              value={formState.mobileNumber}
-              onChange={onFieldChange}
-              onBlur={handleBlur}
-              placeholder="Ej. 3001234567"
-              autoComplete="tel"
-              inputMode="numeric"
-              pattern={mobilePattern}
-              maxLength={10}
-              required
-              aria-invalid={Boolean(fieldErrors.mobileNumber)}
-            />
-            {fieldErrors.mobileNumber ? (
-              <span className="form-error">{fieldErrors.mobileNumber}</span>
-            ) : null}
-          </label>
-        </div>
-
-        {locationsError && (
-          <div className="alert alert--error" role="alert">
-            <span aria-hidden>⚠️</span>
-            <div>
-              <p style={{ margin: 0 }}>{locationsError}</p>
-              <button
-                type="button"
-                className="btn btn-outline"
-                style={{ marginTop: '0.75rem' }}
-                onClick={handleRetryLocations}
+              <label htmlFor="idType">Tipo de identificación*</label>
+              <select
+                id="idType"
+                name="idType"
+                value={formState.idType ?? ''}
+                onChange={(event) => {
+                  const value = event.target.value
+                  setFormState((state) => ({ ...state, idType: value }))
+                  setFieldErrors((prev) => {
+                    const { idType, ...rest } = prev
+                    return rest
+                  })
+                }}
+                disabled={loadingIdTypes || !!errorIdTypes || idTypes.length === 0}
+                aria-label="Selecciona el tipo de documento"
+                title="Selecciona el tipo de documento"
+                required
+                className="input select"
+                aria-invalid={Boolean(fieldErrors.idType)}
               >
-                Reintentar carga
-              </button>
+                <option value="">
+                  {loadingIdTypes ? 'Cargando tipos...' : 'Selecciona un tipo'}
+                </option>
+                {idTypes.map((type) => (
+                  <option key={type.id ?? type.code} value={type.code ?? type.id ?? ''}>
+                    {type.name ?? type.description ?? type.code ?? type.id}
+                  </option>
+                ))}
+              </select>
+              {fieldErrors.idType ? (
+                <span className="form-error">{fieldErrors.idType}</span>
+              ) : null}
+              {loadingIdTypes ? (
+                <div className="form-helper" role="status" aria-live="polite">
+                  <span
+                    className="loader__spinner"
+                    aria-hidden
+                    style={{ width: '24px', height: '24px', borderWidth: '3px' }}
+                  />
+                  Cargando tipos de documento...
+                </div>
+              ) : null}
+              {errorIdTypes ? (
+                <div className="alert alert--info" role="alert">
+                  <span aria-hidden>ℹ️</span>
+                  <div>
+                    <p style={{ margin: 0 }}>{errorIdTypes}</p>
+                    <button
+                      type="button"
+                      className="btn btn-outline"
+                      style={{ marginTop: '0.75rem' }}
+                      onClick={() => {
+                        setCountryRequestId((id) => id + 1)
+                      }}
+                    >
+                      Reintentar
+                    </button>
+                  </div>
+                </div>
+              ) : null}
+              {!loadingIdTypes && !errorIdTypes && idTypes.length === 0 ? (
+                <span className="form-helper">No hay tipos de documento disponibles.</span>
+              ) : null}
             </div>
+
+            <label
+              className={`form-control${fieldErrors.idNumber ? ' form-control--error' : ''}`}
+              htmlFor="idNumber"
+            >
+              Número de identificación*
+              <input
+                id="idNumber"
+                name="idNumber"
+                value={formState.idNumber}
+                onChange={onFieldChange}
+                onBlur={handleBlur}
+                placeholder="Ingresa el número"
+                autoComplete="off"
+                inputMode="numeric"
+                pattern="\\d*"
+                required
+                aria-invalid={Boolean(fieldErrors.idNumber)}
+              />
+              {fieldErrors.idNumber ? (
+                <span className="form-error">{fieldErrors.idNumber}</span>
+              ) : null}
+            </label>
+
+            <label
+              className={`form-control${fieldErrors.firstName ? ' form-control--error' : ''}`}
+              htmlFor="firstName"
+            >
+              Primer nombre*
+              <input
+                id="firstName"
+                name="firstName"
+                value={formState.firstName}
+                onChange={onFieldChange}
+                onBlur={handleBlur}
+                placeholder="Ej. María"
+                autoComplete="given-name"
+                required
+                aria-invalid={Boolean(fieldErrors.firstName)}
+              />
+              {fieldErrors.firstName ? (
+                <span className="form-error">{fieldErrors.firstName}</span>
+              ) : null}
+            </label>
+
+            <label
+              className={`form-control${fieldErrors.secondName ? ' form-control--error' : ''}`}
+              htmlFor="secondName"
+            >
+              Segundo nombre
+              <input
+                id="secondName"
+                name="secondName"
+                value={formState.secondName ?? ''}
+                onChange={onFieldChange}
+                onBlur={handleBlur}
+                placeholder="Opcional"
+                autoComplete="given-name"
+              />
+              {fieldErrors.secondName ? (
+                <span className="form-error">{fieldErrors.secondName}</span>
+              ) : null}
+              <span className="form-helper">Este campo es opcional.</span>
+            </label>
+
+            <label
+              className={`form-control${fieldErrors.firstSurname ? ' form-control--error' : ''}`}
+              htmlFor="firstSurname"
+            >
+              Primer apellido*
+              <input
+                id="firstSurname"
+                name="firstSurname"
+                value={formState.firstSurname}
+                onChange={onFieldChange}
+                onBlur={handleBlur}
+                placeholder="Ej. González"
+                autoComplete="family-name"
+                required
+                aria-invalid={Boolean(fieldErrors.firstSurname)}
+              />
+              {fieldErrors.firstSurname ? (
+                <span className="form-error">{fieldErrors.firstSurname}</span>
+              ) : null}
+            </label>
+
+            <label
+              className={`form-control${fieldErrors.secondSurname ? ' form-control--error' : ''}`}
+              htmlFor="secondSurname"
+            >
+              Segundo apellido
+              <input
+                id="secondSurname"
+                name="secondSurname"
+                value={formState.secondSurname ?? ''}
+                onChange={onFieldChange}
+                onBlur={handleBlur}
+                placeholder="Opcional"
+                autoComplete="family-name"
+              />
+              {fieldErrors.secondSurname ? (
+                <span className="form-error">{fieldErrors.secondSurname}</span>
+              ) : null}
+            </label>
           </div>
-        )}
+        </section>
+
+        <section className="card form-section" aria-labelledby="location-data">
+          <header className="form-section__header">
+            <h2 id="location-data" className="form-section__title">
+              Ubicación
+            </h2>
+            <p className="form-section__description">
+              Selecciona el país, departamento y ciudad que definirán la ubicación oficial del usuario.
+            </p>
+          </header>
+
+          <div className="form-grid">
+            <label
+              className={`form-control${fieldErrors.country ? ' form-control--error' : ''}`}
+              htmlFor="country"
+            >
+              País*
+              <select
+                id="country"
+                value={selectedCountry}
+                onChange={handleCountryChange}
+                disabled={loadingCountries || countries.length === 0}
+                aria-busy={loadingCountries}
+                required
+                aria-invalid={Boolean(fieldErrors.country)}
+              >
+                <option value="">
+                  {loadingCountries ? 'Cargando países...' : 'Selecciona un país'}
+                </option>
+                {countries.map((country) => (
+                  <option key={country.id} value={country.id}>
+                    {country.name}
+                  </option>
+                ))}
+              </select>
+              {fieldErrors.country ? (
+                <span className="form-error">{fieldErrors.country}</span>
+              ) : null}
+            </label>
+
+            <label
+              className={`form-control${fieldErrors.department ? ' form-control--error' : ''}`}
+              htmlFor="department"
+            >
+              Departamento*
+              <select
+                id="department"
+                value={selectedDepartment}
+                onChange={handleDepartmentChange}
+                disabled={!selectedCountry || loadingDepartments || departments.length === 0}
+                aria-busy={loadingDepartments}
+                required
+                aria-invalid={Boolean(fieldErrors.department)}
+              >
+                <option value="">
+                  {!selectedCountry
+                    ? 'Selecciona primero un país'
+                    : loadingDepartments
+                      ? 'Cargando departamentos...'
+                      : 'Selecciona un departamento'}
+                </option>
+                {departments.map((department) => (
+                  <option key={department.id} value={department.id}>
+                    {department.name}
+                  </option>
+                ))}
+              </select>
+              {fieldErrors.department ? (
+                <span className="form-error">{fieldErrors.department}</span>
+              ) : null}
+            </label>
+
+            <label
+              className={`form-control${fieldErrors.homeCity ? ' form-control--error' : ''}`}
+              htmlFor="homeCity"
+            >
+              Ciudad*
+              <select
+                id="homeCity"
+                value={formState.homeCity}
+                onChange={handleCityChange}
+                disabled={!selectedDepartment || loadingCities || cities.length === 0}
+                aria-busy={loadingCities}
+                required
+                aria-invalid={Boolean(fieldErrors.homeCity)}
+              >
+                <option value="">
+                  {!selectedDepartment
+                    ? 'Selecciona primero un departamento'
+                    : loadingCities
+                      ? 'Cargando ciudades...'
+                      : 'Selecciona una ciudad'}
+                </option>
+                {cities.map((city) => (
+                  <option key={city.id} value={city.id}>
+                    {city.name}
+                  </option>
+                ))}
+              </select>
+              {fieldErrors.homeCity ? (
+                <span className="form-error">{fieldErrors.homeCity}</span>
+              ) : null}
+            </label>
+          </div>
+
+          {locationsError && (
+            <div className="alert alert--error" role="alert">
+              <span aria-hidden>⚠️</span>
+              <div>
+                <p style={{ margin: 0 }}>{locationsError}</p>
+                <button
+                  type="button"
+                  className="btn btn-outline"
+                  style={{ marginTop: '0.75rem' }}
+                  onClick={handleRetryLocations}
+                >
+                  Reintentar carga
+                </button>
+              </div>
+            </div>
+          )}
+        </section>
+
+        <section className="card form-section" aria-labelledby="contact-data">
+          <header className="form-section__header">
+            <h2 id="contact-data" className="form-section__title">
+              Datos de contacto
+            </h2>
+            <p className="form-section__description">
+              Asegura canales confiables para activar el flujo de verificación por correo y por SMS.
+            </p>
+          </header>
+
+          <div className="form-grid">
+            <label
+              className={`form-control${fieldErrors.email ? ' form-control--error' : ''}`}
+              htmlFor="email"
+            >
+              Correo electrónico*
+              <input
+                id="email"
+                type="email"
+                name="email"
+                value={formState.email}
+                onChange={onFieldChange}
+                onBlur={handleBlur}
+                placeholder="usuario@uco.edu.co"
+                autoComplete="email"
+                pattern={emailPattern}
+                required
+                aria-invalid={Boolean(fieldErrors.email)}
+              />
+              {fieldErrors.email ? (
+                <span className="form-error">{fieldErrors.email}</span>
+              ) : null}
+            </label>
+
+            <label
+              className={`form-control${fieldErrors.mobileNumber ? ' form-control--error' : ''}`}
+              htmlFor="mobileNumber"
+            >
+              Teléfono móvil*
+              <input
+                id="mobileNumber"
+                name="mobileNumber"
+                value={formState.mobileNumber}
+                onChange={onFieldChange}
+                onBlur={handleBlur}
+                placeholder="Ej. 3001234567"
+                autoComplete="tel"
+                inputMode="numeric"
+                pattern={mobilePattern}
+                maxLength={10}
+                required
+                aria-invalid={Boolean(fieldErrors.mobileNumber)}
+              />
+              {fieldErrors.mobileNumber ? (
+                <span className="form-error">{fieldErrors.mobileNumber}</span>
+              ) : null}
+            </label>
+          </div>
+        </section>
 
         {err && (
           <div className="alert alert--error" role="alert">
@@ -903,4 +943,5 @@ export default function UserCreatePage() {
       </form>
     </main>
   )
+
 }

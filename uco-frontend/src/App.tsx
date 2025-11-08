@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import { useAuth0 } from '@auth0/auth0-react'
@@ -96,38 +96,20 @@ const App = () => {
     }
   }, [isAuthenticated])
 
-  // Estado para Toast dinámico
-  const [ToastComp, setToastComp] = useState<any>(null)
-
-  useEffect(() => {
-    let mounted = true
-    import('react-toastify')
-      .then(mod => {
-        const Comp =
-          (mod as any).ToastContainer ?? (mod as any).default?.ToastContainer ?? null
-        if (mounted) setToastComp(() => Comp)
-        console.log('DEBUG: react-toastify module ->', mod, 'resolved ToastContainer ->', Comp)
-      })
-      .catch(err => {
-        console.warn('DEBUG: no se pudo cargar react-toastify dinámicamente', err)
-      })
-    return () => {
-      mounted = false
-    }
-  }, [])
-
   const avatarLetter = (user?.name ?? user?.email ?? '?').charAt(0).toUpperCase()
 
   return (
     <ErrorBoundary>
       <div className="app-shell">
         <header className="app-header">
-          <NavLink to="/" className="brand">
-            <span className="brand__dot" aria-hidden />
-            <span>UCO Admin</span>
-          </NavLink>
+          <div className="app-header__group">
+            <NavLink to="/" className="brand" aria-label="Ir al inicio de UCO Challenge">
+              <span className="brand__dot" aria-hidden />
+              <span>UCO Challenge</span>
+            </NavLink>
+          </div>
 
-          <nav className="app-nav">
+          <nav className="app-nav" aria-label="Navegación principal">
             <NavLink to="/" className={({ isActive }) => `app-nav__link${isActive ? ' is-active' : ''}`}>
               Inicio
             </NavLink>
@@ -151,6 +133,7 @@ const App = () => {
               <button
                 onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
                 className="logout-btn"
+                type="button"
               >
                 Cerrar sesión
               </button>
@@ -164,13 +147,20 @@ const App = () => {
           <AppRouter />
         </div>
 
+        <footer className="app-footer">
+          <p>
+            © {new Date().getFullYear()} UCO Challenge. Construido con seguridad Auth0 y microservicios
+            orquestados.
+          </p>
+        </footer>
+
         <ToastContainer
           position="top-right"
-          autoClose={3000}
+          autoClose={3200}
           newestOnTop
           closeOnClick
           pauseOnHover
-          theme="colored"
+          theme="dark"
         />
       </div>
 
