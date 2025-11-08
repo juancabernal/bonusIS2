@@ -13,7 +13,10 @@
 .table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 720px;
+  /* allow the table to shrink below previous hard minimum so it can adapt
+     to narrow viewports. Keep overflow container for long content. */
+  min-width: 0;
+  table-layout: auto;
 }
 
 .table thead {
@@ -29,6 +32,9 @@
   padding: 1rem 1.2rem;
   border-bottom: 1px solid var(--color-border);
   text-align: left;
+  /* allow long text to wrap instead of forcing horizontal scroll */
+  white-space: normal;
+  word-break: break-word;
 }
 
 .table tbody tr:hover {
@@ -54,7 +60,8 @@
 }
 
 .statusCell {
-  min-width: 220px;
+  /* avoid forcing a column minimum; allow it to shrink on small screens */
+  min-width: 0;
 }
 
 .statusGroup {
@@ -88,7 +95,8 @@
 }
 
 .actionsCell {
-  min-width: 240px;
+  /* allow actions cell to shrink and wrap buttons when needed */
+  min-width: 0;
 }
 
 .actions {
@@ -98,7 +106,9 @@
 }
 
 .actions :global(.button) {
-  min-width: 9.5rem;
+  /* let action buttons size naturally; on narrow screens we'll make them
+     span full width so they remain tappable without changing behavior */
+  min-width: auto;
 }
 
 .buttonContent {
@@ -118,6 +128,38 @@
   }
 
   .table {
-    min-width: 640px;
+    /* further reduce minimum to allow tighter layouts on medium screens */
+    min-width: 0;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.7rem 0.9rem;
+    font-size: 0.95rem;
+  }
+
+  /* make buttons more compact on medium screens */
+  .actions :global(.button) {
+    min-width: 7rem;
+  }
+}
+
+@media (max-width: 640px) {
+  /* on small screens make action buttons full width and stack them */
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .actions :global(.button) {
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* reduce spacing so table fits better */
+  .table th,
+  .table td {
+    padding: 0.55rem 0.65rem;
+    font-size: 0.92rem;
   }
 }

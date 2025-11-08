@@ -6,6 +6,7 @@ interface UseCitiesState {
   data: City[]
   loading: boolean
   error: string | null
+  lastUpdated?: number | null
 }
 
 export function useCities(departmentId: string) {
@@ -14,6 +15,7 @@ export function useCities(departmentId: string) {
     data: [],
     loading: false,
     error: null,
+    lastUpdated: null,
   })
   const [refreshIndex, setRefreshIndex] = useState(0)
 
@@ -23,6 +25,7 @@ export function useCities(departmentId: string) {
 
   useEffect(() => {
     let cancelled = false
+    let intervalId: ReturnType<typeof setInterval> | null = null
 
     if (!normalizedDepartmentId) {
       setState({ data: [], loading: false, error: null })
@@ -31,30 +34,33 @@ export function useCities(departmentId: string) {
       }
     }
 
-    const load = async () => {
-      setState({ data: [], loading: true, error: null })
+    const load = async (initial = false) => {
+      if (initial) setState((prev) => ({ ...prev, loading: true, error: null }))
 
       try {
         const result = await getCities(normalizedDepartmentId)
         if (cancelled) return
 
-        setState({ data: result, loading: false, error: null })
+        setState((prev) => {
+          const prevData = prev.data || []
+          const same = JSON.stringify(prevData) === JSON.stringify(result)
+          if (same) return { ...prev, loading: false, error: null }
+          return { data: result, loading: false, error: null, lastUpdated: Date.now() }
+        })
       } catch (error) {
-        console.error(error)
+        console.error('Error polling cities for', normalizedDepartmentId, error)
         if (cancelled) return
 
-        setState({
-          data: [],
-          loading: false,
-          error: 'No se pudieron cargar las ciudades. Inténtalo de nuevo.',
-        })
+        setState((prev) => ({ ...prev, loading: false, error: 'No se pudieron cargar las ciudades. Inténtalo de nuevo.' }))
       }
     }
 
-    void load()
+    void load(true)
+    intervalId = setInterval(() => void load(false), 5000)
 
     return () => {
       cancelled = true
+      if (intervalId != null) clearInterval(intervalId)
     }
   }, [normalizedDepartmentId, refreshIndex])
 

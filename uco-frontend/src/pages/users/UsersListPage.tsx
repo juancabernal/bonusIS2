@@ -60,7 +60,16 @@ const UsersListPage = () => {
     loading,
     error: loadError,
     reload,
+    lastUpdated: usersLastUpdated,
   } = useUsers(page, size)
+
+  const [showUsersBadge, setShowUsersBadge] = useState(false)
+  useEffect(() => {
+    if (!usersLastUpdated) return
+    setShowUsersBadge(true)
+    const t = setTimeout(() => setShowUsersBadge(false), 1500)
+    return () => clearTimeout(t)
+  }, [usersLastUpdated])
 
   useEffect(() => {
     const next = new URLSearchParams(searchParams)
@@ -288,7 +297,14 @@ const UsersListPage = () => {
       </header>
 
       <section className={styles.summaryCard} aria-live="polite">
-        <span className={styles.summaryLabel}>Usuarios totales</span>
+        <span className={styles.summaryLabel}>
+          Usuarios totales
+          {showUsersBadge ? (
+            <span className={`${styles.updateBadge} ${styles.updateBadgeBlink}`} aria-hidden>
+              Actualizado
+            </span>
+          ) : null}
+        </span>
         <p className={styles.summaryValue}>{totalUsers}</p>
         <p
           className={styles.summaryHelper}

@@ -120,28 +120,65 @@ export default function UserCreatePage() {
     loading: loadingIdTypes,
     error: idTypesError,
     refresh: refreshIdTypes,
+    lastUpdated: idTypesLastUpdated,
   } = useIdTypes()
+
+  // show a brief badge when idTypes refreshes with new data
+  const [showIdTypesBadge, setShowIdTypesBadge] = useState(false)
+  useEffect(() => {
+    if (!idTypesLastUpdated) return
+    setShowIdTypesBadge(true)
+    const t = setTimeout(() => setShowIdTypesBadge(false), 1500)
+    return () => clearTimeout(t)
+  }, [idTypesLastUpdated])
 
   const {
     data: countries,
     loading: loadingCountries,
     error: countriesError,
     refresh: refreshCountries,
+    lastUpdated: countriesLastUpdated,
   } = useCountries()
+
+  const [showCountriesBadge, setShowCountriesBadge] = useState(false)
+  useEffect(() => {
+    if (!countriesLastUpdated) return
+    setShowCountriesBadge(true)
+    const t = setTimeout(() => setShowCountriesBadge(false), 1500)
+    return () => clearTimeout(t)
+  }, [countriesLastUpdated])
 
   const {
     data: departments,
     loading: loadingDepartments,
     error: departmentsError,
     refresh: refreshDepartments,
+    lastUpdated: departmentsLastUpdated,
   } = useDepartments(selectedCountry)
+
+  const [showDepartmentsBadge, setShowDepartmentsBadge] = useState(false)
+  useEffect(() => {
+    if (!departmentsLastUpdated) return
+    setShowDepartmentsBadge(true)
+    const t = setTimeout(() => setShowDepartmentsBadge(false), 1500)
+    return () => clearTimeout(t)
+  }, [departmentsLastUpdated])
 
   const {
     data: cities,
     loading: loadingCities,
     error: citiesError,
     refresh: refreshCities,
+    lastUpdated: citiesLastUpdated,
   } = useCities(selectedDepartment)
+
+  const [showCitiesBadge, setShowCitiesBadge] = useState(false)
+  useEffect(() => {
+    if (!citiesLastUpdated) return
+    setShowCitiesBadge(true)
+    const t = setTimeout(() => setShowCitiesBadge(false), 1500)
+    return () => clearTimeout(t)
+  }, [citiesLastUpdated])
 
   const errorIdTypes = idTypesError
 
@@ -564,7 +601,14 @@ export default function UserCreatePage() {
 
           <div className={styles.fieldGrid}>
             <div className={`${styles.field} ${fieldErrors.idType ? styles.fieldError : ''}`}>
-              <span className={styles.label}>Tipo de identificación*</span>
+              <span className={styles.label}>
+                Tipo de identificación*
+                {showIdTypesBadge ? (
+                  <span className={`${styles.updateBadge} ${styles.updateBadgeBlink}`} aria-hidden>
+                    Actualizado
+                  </span>
+                ) : null}
+              </span>
               <select
                 id="idType"
                 name="idType"
@@ -730,7 +774,14 @@ export default function UserCreatePage() {
 
           <div className={styles.fieldGrid}>
             <div className={`${styles.field} ${fieldErrors.country ? styles.fieldError : ''}`}>
-              <span className={styles.label}>País*</span>
+              <span className={styles.label}>
+                País*
+                {showCountriesBadge ? (
+                  <span className={`${styles.updateBadge} ${styles.updateBadgeBlink}`} aria-hidden>
+                    Actualizado
+                  </span>
+                ) : null}
+              </span>
               <select
                 id="country"
                 value={selectedCountry}
@@ -754,7 +805,14 @@ export default function UserCreatePage() {
             </div>
 
             <div className={`${styles.field} ${fieldErrors.department ? styles.fieldError : ''}`}>
-              <span className={styles.label}>Departamento*</span>
+              <span className={styles.label}>
+                Departamento*
+                {showDepartmentsBadge ? (
+                  <span className={`${styles.updateBadge} ${styles.updateBadgeBlink}`} aria-hidden>
+                    Actualizado
+                  </span>
+                ) : null}
+              </span>
               <select
                 id="department"
                 value={selectedDepartment}
@@ -782,7 +840,14 @@ export default function UserCreatePage() {
             </div>
 
             <div className={`${styles.field} ${fieldErrors.homeCity ? styles.fieldError : ''}`}>
-              <span className={styles.label}>Ciudad*</span>
+              <span className={styles.label}>
+                Ciudad*
+                {showCitiesBadge ? (
+                  <span className={`${styles.updateBadge} ${styles.updateBadgeBlink}`} aria-hidden>
+                    Actualizado
+                  </span>
+                ) : null}
+              </span>
               <select
                 id="homeCity"
                 value={formState.homeCity}
