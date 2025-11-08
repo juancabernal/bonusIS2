@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom'
+import styles from './NotAuthorized.module.css'
 
 const NotAuthorized = () => (
-  <main className="page">
-    <section className="card empty-state" role="alert">
-      <span className="status-icon" aria-hidden>
+  <main className={`page ${styles.page}`}>
+    <section className={styles.card} role="alert" aria-live="assertive">
+      <span className={styles.icon} aria-hidden>
         🔐
       </span>
       <div>
@@ -11,9 +12,11 @@ const NotAuthorized = () => (
         <p>No tienes permisos para acceder a esta sección.</p>
         <p>Si crees que es un error, contacta al administrador del sistema.</p>
       </div>
-      <Link to="/" className="btn btn-primary">
-        Ir al inicio
-      </Link>
+      <div className={styles.actions}>
+        <Link to="/" className="button button--primary">
+          Ir al inicio
+        </Link>
+      </div>
     </section>
   </main>
 )

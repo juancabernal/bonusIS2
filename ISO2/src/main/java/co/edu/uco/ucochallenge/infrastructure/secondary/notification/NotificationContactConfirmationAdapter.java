@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.notificationapi.NotificationApi;
-import com.notificationapi.model.EmailOptions;
 import com.notificationapi.model.NotificationRequest;
 import com.notificationapi.model.SmsOptions;
 import com.notificationapi.model.User;
@@ -59,14 +58,29 @@ public class NotificationContactConfirmationAdapter implements ContactConfirmati
                     .setEmail(email)
                     .setNumber(number);
 
+            // ✅ Si es email, usa la plantilla "predeterminado" y pasa el token
+            if (email != null) {
+                Map<String, Object> params = new HashMap<>();
+                params.put("verificationCode", code); // Referencia {{verificationCode}} en la plantilla
+
+                NotificationRequest request = new NotificationRequest("confirmar_datos", user)
+                        .setTemplateId("predeterminado")
+                        .setParameters(params);
+
+                String response = api.send(request);
+                LOGGER.info("[NotificationAPI] Email verification code {} sent to {} | Response: {}", code, contact, response);
+                return;
+            }
+
+            // 🚫 No se toca el resto del código (SMS y demás)
             Map<String, Object> mergeTags = new HashMap<>();
             mergeTags.put("name", contact);
             mergeTags.put("confirmationCode", code);
             mergeTags.put("currentYear", "2025");
             mergeTags.put("comment", subject);
 
-            NotificationRequest request = new NotificationRequest("uco_notification", user)
-                    .setTemplateId("template_one")
+            NotificationRequest request = new NotificationRequest("confirmar_datos", user)
+                    .setTemplateId("predeterminado")
                     .setMergeTags(mergeTags);
 
             String response = api.send(request);
@@ -91,7 +105,7 @@ public class NotificationContactConfirmationAdapter implements ContactConfirmati
 
                 User user = new User(e164).setNumber(e164);
 
-                NotificationRequest req = new NotificationRequest("uco_notification", user)
+                NotificationRequest req = new NotificationRequest("confirmar_datos", user)
                         .setTemplateId("template_one")
                         .setSms(new SmsOptions().setMessage("Tu código de verificación UCO Challenge es: " + code))
                         .setMergeTags(merge);
@@ -104,12 +118,13 @@ public class NotificationContactConfirmationAdapter implements ContactConfirmati
             if ("email".equalsIgnoreCase(channel)) {
                 User user = new User(email).setEmail(email);
 
-                NotificationRequest req = new NotificationRequest("uco_notification", user)
-                        .setTemplateId("template_one")
-                        .setEmail(new EmailOptions()
-                                .setSubject("Código de verificación")
-                                .setHtml("<p>Tu código de verificación UCO Challenge es: <b>" + code + "</b></p>"))
-                        .setMergeTags(merge);
+                // ✅ Aquí también usamos la plantilla predeterminada con el token
+                Map<String, Object> params = new HashMap<>();
+                params.put("verificationCode", code);
+
+                NotificationRequest req = new NotificationRequest("confirmar_datos", user)
+                        .setTemplateId("predeterminado")
+                        .setParameters(params);
 
                 String resp = api.send(req);
                 LOGGER.info("[NotificationAPI] Email code sent: {}", resp);

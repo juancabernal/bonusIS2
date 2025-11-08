@@ -17,7 +17,7 @@ const LogoutButton = ({ className }: LogoutButtonProps) => {
   }, [logout])
 
   return (
-    <button type="button" className={className} onClick={handleLogout}>
+    <button type="button" className={className ?? 'button button--ghost'} onClick={handleLogout}>
       Cerrar sesión
     </button>
   )

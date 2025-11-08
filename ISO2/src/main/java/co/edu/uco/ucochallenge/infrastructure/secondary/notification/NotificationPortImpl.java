@@ -24,8 +24,8 @@ public class NotificationPortImpl implements NotificationPort {
 
     private static final String DEFAULT_ADMIN_EMAIL = "juancamilobernal2222@gmail.com";
 
-    private static final String DUP_NOTIFICATION_ID = "uco_duplicate";
-    private static final String DUP_TEMPLATE_ID     = "template_one";
+    private static final String DUP_NOTIFICATION_ID = "duplicate_alert";
+    private static final String DUP_TEMPLATE_ID     = "predeterminado";
 
     private final NotificationApi notificationApi;
     private final ParametersCatalogCache parametersCatalogCache;

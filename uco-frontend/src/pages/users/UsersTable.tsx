@@ -9,8 +9,8 @@ interface UsersTableProps {
 
 const UsersTable = ({ data, onConfirmEmail, onConfirmMobile }: UsersTableProps) => {
   return (
-    <section className={styles.tableCard} aria-live="polite">
-      <div className={styles.tableWrapper}>
+    <section className={styles.wrapper} aria-live="polite">
+      <div className={styles.tableScroll}>
         <table className={styles.table} aria-label="Listado de usuarios">
           <thead>
             <tr>
@@ -40,32 +40,22 @@ const UsersTable = ({ data, onConfirmEmail, onConfirmMobile }: UsersTableProps) 
                   <td className={styles.email}>{user.email}</td>
                   <td className={styles.mobile}>{formattedMobile}</td>
                   <td className={styles.statusCell}>
-                    <div className={styles.statusBadges}>
+                    <div className={styles.statusGroup}>
                       <span
-                        className={`${styles.statusBadge} ${
-                          emailConfirmed ? styles.statusBadgeSuccess : styles.statusBadgePending
-                        }`.trim()}
+                        className={`${styles.status} ${emailConfirmed ? styles.statusSuccess : styles.statusPending}`.trim()}
                         role="status"
                         aria-live="polite"
                         aria-label={emailStatusLabel}
                       >
-                        <span className={styles.statusBadgeIcon} aria-hidden>
-                          {emailConfirmed ? '✅' : '⌛'}
-                        </span>
-                        <span>{emailStatusLabel}</span>
+                        {emailStatusLabel}
                       </span>
                       <span
-                        className={`${styles.statusBadge} ${
-                          mobileConfirmed ? styles.statusBadgeSuccess : styles.statusBadgePending
-                        }`.trim()}
+                        className={`${styles.status} ${mobileConfirmed ? styles.statusSuccess : styles.statusPending}`.trim()}
                         role="status"
                         aria-live="polite"
                         aria-label={mobileStatusLabel}
                       >
-                        <span className={styles.statusBadgeIcon} aria-hidden>
-                          {mobileConfirmed ? '✅' : '⌛'}
-                        </span>
-                        <span>{mobileStatusLabel}</span>
+                        {mobileStatusLabel}
                       </span>
                     </div>
                   </td>
@@ -73,7 +63,7 @@ const UsersTable = ({ data, onConfirmEmail, onConfirmMobile }: UsersTableProps) 
                     <div className={styles.actions}>
                       <button
                         type="button"
-                        className="btn btn-primary"
+                        className="button button--primary"
                         onClick={() => onConfirmEmail(user)}
                         disabled={!canConfirmEmail}
                         aria-label={`Confirmar correo de ${displayName}`}
@@ -83,7 +73,7 @@ const UsersTable = ({ data, onConfirmEmail, onConfirmMobile }: UsersTableProps) 
                       </button>
                       <button
                         type="button"
-                        className="btn btn-outline"
+                        className="button button--secondary"
                         onClick={() => onConfirmMobile(user)}
                         disabled={!canConfirmMobile}
                         aria-label={`Confirmar número de ${displayName}`}
