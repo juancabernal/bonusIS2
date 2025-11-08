@@ -88,7 +88,7 @@ public class NotificationPortImpl implements NotificationPort {
         }
     }
 
-    // ===== Implementación del puerto (solo email) =====
+    // ===== Implementación del puerto (solo email) =====.
 
     @Override
     public void notifyAdministrator(final String message) {
