@@ -1,17 +1,32 @@
-import type { UserSummary } from '../../api/users'
+import ButtonSpinner from '../../components/ui/ButtonSpinner'
+import type { UserSummary, VerificationAction } from './types'
 import styles from './UsersTable.module.css'
 
 interface UsersTableProps {
   data: UserSummary[]
   onConfirmEmail: (user: UserSummary) => void
   onConfirmMobile: (user: UserSummary) => void
+  pendingAction?: VerificationAction | null
+  isFiltering?: boolean
 }
 
-const UsersTable = ({ data, onConfirmEmail, onConfirmMobile }: UsersTableProps) => {
+const UsersTable = ({
+  data,
+  onConfirmEmail,
+  onConfirmMobile,
+  pendingAction = null,
+  isFiltering = false,
+}: UsersTableProps) => {
+  const busy = Boolean(isFiltering)
+
   return (
-    <section className={styles.wrapper} aria-live="polite">
+    <section
+      className={styles.wrapper}
+      aria-live="polite"
+      data-filtering={busy ? 'true' : undefined}
+    >
       <div className={styles.tableScroll}>
-        <table className={styles.table} aria-label="Listado de usuarios">
+        <table className={styles.table} aria-label="Listado de usuarios" aria-busy={busy}>
           <thead>
             <tr>
               <th scope="col">Nombre completo</th>
@@ -33,9 +48,16 @@ const UsersTable = ({ data, onConfirmEmail, onConfirmMobile }: UsersTableProps) 
               const canConfirmMobile = Boolean(mobileNumber) && !mobileConfirmed
               const emailStatusLabel = emailConfirmed ? 'Correo verificado' : 'Correo pendiente'
               const mobileStatusLabel = mobileConfirmed ? 'Móvil verificado' : 'Móvil pendiente'
+              const isPendingRow = pendingAction?.userId === user.id
+              const isEmailPending = isPendingRow && pendingAction?.channel === 'email'
+              const isMobilePending = isPendingRow && pendingAction?.channel === 'mobile'
 
               return (
-                <tr key={user.id}>
+                <tr
+                  key={user.id}
+                  data-pending={isPendingRow ? 'true' : undefined}
+                  aria-busy={isPendingRow ? true : undefined}
+                >
                   <td className={styles.fullName}>{fullName}</td>
                   <td className={styles.email}>{user.email}</td>
                   <td className={styles.mobile}>{formattedMobile}</td>
@@ -65,27 +87,55 @@ const UsersTable = ({ data, onConfirmEmail, onConfirmMobile }: UsersTableProps) 
                         type="button"
                         className="button button--primary"
                         onClick={() => onConfirmEmail(user)}
-                        disabled={!canConfirmEmail}
+                        disabled={!canConfirmEmail || Boolean(isEmailPending)}
+                        aria-busy={isEmailPending}
                         aria-label={`Confirmar correo de ${displayName}`}
-                        title={emailConfirmed ? 'Correo ya confirmado' : 'Confirmar correo'}
+                        title={
+                          isEmailPending
+                            ? 'Enviando código de verificación...'
+                            : emailConfirmed
+                              ? 'Correo ya confirmado'
+                              : 'Confirmar correo'
+                        }
                       >
-                        Confirmar correo
+                        <span className={styles.buttonContent}>
+                          {isEmailPending ? (
+                            <>
+                              <ButtonSpinner label={`Enviando código al correo de ${displayName}`} />
+                              <span>Enviando…</span>
+                            </>
+                          ) : (
+                            'Confirmar correo'
+                          )}
+                        </span>
                       </button>
                       <button
                         type="button"
                         className="button button--secondary"
                         onClick={() => onConfirmMobile(user)}
-                        disabled={!canConfirmMobile}
+                        disabled={!canConfirmMobile || Boolean(isMobilePending)}
+                        aria-busy={isMobilePending}
                         aria-label={`Confirmar número de ${displayName}`}
                         title={
-                          mobileConfirmed
-                            ? 'Número ya confirmado'
-                            : mobileNumber
-                              ? 'Confirmar número'
-                              : 'Número de móvil no disponible'
+                          isMobilePending
+                            ? 'Enviando código de verificación...'
+                            : mobileConfirmed
+                              ? 'Número ya confirmado'
+                              : mobileNumber
+                                ? 'Confirmar número'
+                                : 'Número de móvil no disponible'
                         }
                       >
-                        Confirmar número
+                        <span className={styles.buttonContent}>
+                          {isMobilePending ? (
+                            <>
+                              <ButtonSpinner label={`Enviando código al móvil de ${displayName}`} />
+                              <span>Enviando…</span>
+                            </>
+                          ) : (
+                            'Confirmar número'
+                          )}
+                        </span>
                       </button>
                     </div>
                   </td>

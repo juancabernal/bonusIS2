@@ -13,6 +13,8 @@ import co.edu.uco.ucochallenge.application.location.dto.CityDTO;
 import co.edu.uco.ucochallenge.application.location.dto.CountryDTO;
 import co.edu.uco.ucochallenge.application.location.dto.DepartmentDTO;
 import co.edu.uco.ucochallenge.application.location.service.LocationQueryService;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @RestController
 @RequestMapping("/uco-challenge/api/v1/locations")
@@ -25,20 +27,20 @@ public class LocationController {
         }
 
         @GetMapping("/countries")
-        public ResponseEntity<List<CountryDTO>> getCountries() {
-                final var countries = locationQueryService.getCountries();
-                return ResponseEntity.ok(countries);
+        public Mono<ResponseEntity<List<CountryDTO>>> getCountries() {
+                return Mono.fromCallable(() -> ResponseEntity.ok(locationQueryService.getCountries()))
+                                .subscribeOn(Schedulers.boundedElastic());
         }
 
         @GetMapping("/countries/{countryId}/departments")
-        public ResponseEntity<List<DepartmentDTO>> getDepartments(@PathVariable final UUID countryId) {
-                final var departments = locationQueryService.getDepartmentsByCountry(countryId);
-                return ResponseEntity.ok(departments);
+        public Mono<ResponseEntity<List<DepartmentDTO>>> getDepartments(@PathVariable final UUID countryId) {
+                return Mono.fromCallable(() -> ResponseEntity.ok(locationQueryService.getDepartmentsByCountry(countryId)))
+                                .subscribeOn(Schedulers.boundedElastic());
         }
 
         @GetMapping("/departments/{departmentId}/cities")
-        public ResponseEntity<List<CityDTO>> getCities(@PathVariable final UUID departmentId) {
-                final var cities = locationQueryService.getCitiesByDepartment(departmentId);
-                return ResponseEntity.ok(cities);
+        public Mono<ResponseEntity<List<CityDTO>>> getCities(@PathVariable final UUID departmentId) {
+                return Mono.fromCallable(() -> ResponseEntity.ok(locationQueryService.getCitiesByDepartment(departmentId)))
+                                .subscribeOn(Schedulers.boundedElastic());
         }
 }

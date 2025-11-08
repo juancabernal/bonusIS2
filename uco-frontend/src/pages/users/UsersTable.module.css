@@ -35,6 +35,10 @@
   background: rgba(108, 99, 255, 0.06);
 }
 
+.table tbody tr[data-pending='true'] {
+  background: rgba(108, 99, 255, 0.12);
+}
+
 .fullName {
   font-weight: 600;
   color: var(--color-text-primary);
@@ -95,6 +99,17 @@
 
 .actions :global(.button) {
   min-width: 9.5rem;
+}
+
+.buttonContent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+}
+
+.wrapper[data-filtering='true'] {
+  box-shadow: 0 18px 44px rgba(108, 99, 255, 0.22);
 }
 
 @media (max-width: 900px) {

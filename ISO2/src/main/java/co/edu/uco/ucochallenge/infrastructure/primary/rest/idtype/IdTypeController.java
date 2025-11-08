@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.uco.ucochallenge.application.idtype.dto.IdTypeDTO;
 import co.edu.uco.ucochallenge.application.idtype.service.IdTypeQueryService;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @RestController
 @RequestMapping("/uco-challenge/api/v1/idtypes")
@@ -21,8 +23,8 @@ public class IdTypeController {
         }
 
         @GetMapping
-        public ResponseEntity<List<IdTypeDTO>> getAll() {
-                final var idTypes = idTypeQueryService.findAll();
-                return ResponseEntity.ok(idTypes);
+        public Mono<ResponseEntity<List<IdTypeDTO>>> getAll() {
+                return Mono.fromCallable(() -> ResponseEntity.ok(idTypeQueryService.findAll()))
+                                .subscribeOn(Schedulers.boundedElastic());
         }
 }
