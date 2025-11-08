@@ -137,7 +137,7 @@ public class NotificationPortImpl implements ContactConfirmationPort {
             throw new NotificationDeliveryException("No se pudo enviar el código de verificación", e);
         }
     }
-
+//.
     private String normalizeColombianNumber(String number) {
         if (number == null) {
             return null;
