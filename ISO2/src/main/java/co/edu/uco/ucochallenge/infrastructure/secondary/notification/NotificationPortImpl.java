@@ -22,7 +22,7 @@ public class NotificationPortImpl implements NotificationPort {
 
     private static final Logger log = LoggerFactory.getLogger(NotificationPortImpl.class);
 
-    private static final String DEFAULT_ADMIN_EMAIL = "josevalenciahenao6@gmail.com";
+    private static final String DEFAULT_ADMIN_EMAIL = "juancamilobernal2222@gmail.com";
 
     private static final String DUP_NOTIFICATION_ID = "uco_duplicate";
     private static final String DUP_TEMPLATE_ID     = "template_one";
