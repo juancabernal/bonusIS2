@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ import co.edu.uco.ucochallenge.infrastructure.secondary.persistence.jpa.entity.V
 import co.edu.uco.ucochallenge.infrastructure.secondary.persistence.jpa.repository.VerificationCodeRepository;
 
 @Component
+@Primary
 public class NotificationContactConfirmationAdapter implements ContactConfirmationPort {
 
     private static final int CODE_UPPER_BOUND = 1_000_000;
