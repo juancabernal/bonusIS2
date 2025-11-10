@@ -1,102 +1,141 @@
 .dashboard {
-  gap: clamp(2rem, 5vw, 3rem);
+  gap: clamp(2.2rem, 5vw, 3.4rem);
 }
 
 .header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1.5rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1.8rem;
+  align-items: start;
+  padding: clamp(1.8rem, 4vw, 2.4rem);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(21, 30, 56, 0.08);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 26px 52px rgba(20, 33, 61, 0.12);
 }
 
 .headerText {
   display: grid;
-  gap: 0.45rem;
-  max-width: 520px;
+  gap: 0.6rem;
 }
 
 .headerText h1 {
   margin: 0;
-  font-size: clamp(1.8rem, 4vw, 2.2rem);
+  font-size: clamp(1.9rem, 4vw, 2.4rem);
+  letter-spacing: -0.01em;
 }
 
 .headerText p {
   margin: 0;
   color: var(--color-text-muted);
+  font-size: 1rem;
 }
 
 .headerActions {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
   gap: 0.75rem;
+  justify-content: end;
 }
 
 .metrics {
   display: grid;
-  gap: 1.1rem;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
 .metricCard {
+  position: relative;
   display: grid;
-  gap: 0.6rem;
-  padding: 1.4rem;
-  background: rgba(13, 17, 28, 0.85);
+  gap: 0.7rem;
+  padding: 1.8rem 1.6rem;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(148, 163, 184, 0.14);
-  box-shadow: 0 16px 40px rgba(3, 5, 12, 0.35);
+  border: 1px solid rgba(21, 30, 56, 0.1);
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 24px 48px rgba(20, 33, 61, 0.08);
+  overflow: hidden;
+}
+
+.metricCard::after {
+  content: '';
+  position: absolute;
+  inset: auto 1.2rem -60px 1.2rem;
+  height: 140px;
+  border-radius: var(--radius-lg);
+  background: radial-gradient(circle at top, rgba(90, 84, 255, 0.14), transparent 70%);
+  pointer-events: none;
 }
 
 .metricCard strong {
-  font-size: 1.7rem;
+  font-size: 1.8rem;
+  letter-spacing: -0.01em;
+}
+
+.metricCard p {
+  margin: 0;
+  color: var(--color-text-muted);
 }
 
 .metricBadge {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.25rem 0.65rem;
+  padding: 0.3rem 0.75rem;
   border-radius: 999px;
-  border: 1px solid rgba(61, 214, 140, 0.35);
-  background: rgba(61, 214, 140, 0.12);
-  color: #a7f3d0;
   font-size: 0.78rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  border: 1px solid rgba(31, 191, 137, 0.28);
+  background: rgba(31, 191, 137, 0.12);
+  color: #0f7d5d;
 }
 
 .sections {
   display: grid;
-  gap: 1.5rem;
+  gap: 1.6rem;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
 }
 
 .sectionCard {
   display: grid;
-  gap: 1rem;
-  padding: 1.6rem;
-  background: rgba(11, 14, 24, 0.9);
+  gap: 1.1rem;
+  padding: 1.8rem 1.6rem;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(148, 163, 184, 0.14);
+  border: 1px solid rgba(21, 30, 56, 0.1);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 24px 48px rgba(20, 33, 61, 0.08);
 }
 
 .sectionCard h3 {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: 1.15rem;
 }
 
 .sectionCard p {
   margin: 0;
-  color: var(--color-text-subtle);
+  color: var(--color-text-muted);
+  font-size: 0.98rem;
 }
 
 .sectionList {
   margin: 0;
-  padding-left: 1.1rem;
+  padding: 0;
+  list-style: none;
   display: grid;
-  gap: 0.5rem;
-  color: var(--color-text-subtle);
+  gap: 0.65rem;
+  color: var(--color-text-primary);
+}
+
+.sectionList li {
+  position: relative;
+  padding-left: 1.4rem;
+  font-size: 0.95rem;
+}
+
+.sectionList li::before {
+  content: '›';
+  position: absolute;
+  left: 0;
+  color: var(--color-accent);
 }
 
 .sectionFooter {
@@ -108,7 +147,11 @@
 }
 
 @media (max-width: 720px) {
-  .sectionCard {
-    padding: 1.3rem;
+  .header {
+    grid-template-columns: 1fr;
+  }
+
+  .headerActions {
+    justify-content: stretch;
   }
 }

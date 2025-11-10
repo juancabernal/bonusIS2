@@ -10,8 +10,8 @@
   width: 0.85rem;
   height: 0.85rem;
   border-radius: 999px;
-  border: 2px solid rgba(255, 255, 255, 0.7);
-  border-top-color: transparent;
+  border: 2px solid rgba(90, 84, 255, 0.24);
+  border-top-color: var(--color-accent);
   animation: button-spinner-rotate 0.75s linear infinite;
 }
 

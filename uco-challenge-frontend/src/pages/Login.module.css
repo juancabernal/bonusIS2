@@ -1,18 +1,18 @@
 .page {
   display: grid;
   place-items: center;
-  padding: clamp(2rem, 5vw, 3.5rem);
+  padding: clamp(2.4rem, 6vw, 4rem);
 }
 
 .card {
-  max-width: 520px;
+  max-width: 560px;
   display: grid;
-  gap: 1.5rem;
-  padding: clamp(1.8rem, 5vw, 2.3rem);
+  gap: 1.6rem;
+  padding: clamp(2rem, 5vw, 2.6rem);
   border-radius: var(--radius-lg);
-  border: 1px solid rgba(249, 112, 112, 0.35);
-  background: rgba(50, 14, 23, 0.6);
-  box-shadow: var(--shadow-soft);
+  border: 1px solid rgba(240, 68, 82, 0.22);
+  background: rgba(255, 228, 232, 0.55);
+  box-shadow: 0 36px 72px rgba(240, 68, 82, 0.22);
 }
 
 .header {
@@ -22,18 +22,18 @@
 }
 
 .icon {
-  font-size: 2rem;
+  font-size: 2.4rem;
 }
 
 .actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: 0.85rem;
 }
 
 @media (max-width: 540px) {
   .card {
-    padding: 1.6rem;
+    padding: 1.8rem;
   }
 
   .actions {
