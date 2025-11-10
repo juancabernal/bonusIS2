@@ -1,0 +1,35 @@
+* [33m259e3db[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m se arregla metodo de confirmacion de telefono movil funcionando full, falta correo
+* [33m4a4ee6a[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m arreglando error de iniciar aplicacion por notification, se agrego una clase y un primary en la clase de envio de notificacion
+*   [33mf0a64d6[m resolviendo conflictos
+[32m|[m[33m\[m  
+[32m|[m * [33m4e176ad[m 97%
+[32m|[m * [33m0ae59f3[m Backend y Frontend al 96&
+[32m|[m *   [33mcb97b31[m Reactividad Segundo Intento
+[32m|[m [34m|[m[35m\[m  
+[32m|[m [34m|[m * [33m4ce8d83[m[33m ([m[1;31morigin/codex/implement-reactive-data-fetching-in-frontend-and-backend[m[33m)[m Improve cache freshness and reactive data loading
+[32m|[m [34m|[m[34m/[m  
+* [34m/[m [33mc068c35[m cambios locales
+[34m|[m[34m/[m  
+*   [33mf6094b8[m Haciendo la app Reactiva
+[36m|[m[1;31m\[m  
+[36m|[m * [33ma231ec5[m[33m ([m[1;31morigin/codex/make-entire-application-reactive[m[33m)[m Adopt reactive adapters and improve user UX
+* [1;31m|[m [33mac1299c[m Punto de Regreso --- Por si algo falla --- Aquí ya todo el backend está funcionando bien
+* [1;31m|[m [33m42ac2a5[m Resolve merge conflict in NotificationPortImpl
+[1;32m|[m[1;31m\[m[1;31m|[m 
+[1;32m|[m *   [33m61a138a[m Frontend nuevo
+[1;32m|[m [1;34m|[m[1;35m\[m  
+[1;32m|[m [1;34m|[m * [33m8b0294d[m[33m ([m[1;31morigin/codex/complete-redesign-of-uco-frontend[m[33m)[m refactor: redesign admin frontend with dark theme
+[1;32m|[m * [1;35m|[m [33m7940509[m Merge branch 'main' of https://github.com/juancabernal/bonusIS2
+[1;32m|[m [1;36m|[m[1;35m\[m[1;35m|[m 
+[1;32m|[m * [1;35m|[m   [33mb0bdfcb[m arreglando merge
+[1;32m|[m [32m|[m[33m\[m [1;35m\[m  
+[1;32m|[m * [33m|[m [1;35m|[m [33m4b4c1a8[m cambios locales
+* [33m|[m [33m|[m [1;35m|[m [33m655d145[m Cambios correo
+[1;35m|[m [33m|[m[1;35m_[m[33m|[m[1;35m/[m  
+[1;35m|[m[1;35m/[m[33m|[m [33m|[m   
+* [33m|[m [33m|[m   [33md56778b[m Frontend Profesional
+[33m|[m[35m\[m [33m\[m [33m\[m  
+[33m|[m [35m|[m[33m_[m[33m|[m[33m/[m  
+[33m|[m[33m/[m[35m|[m [33m|[m   
+[33m|[m * [33m|[m [33m0a3a453[m[33m ([m[1;31morigin/codex/redesign-uco-frontend-visual-presentation[m[33m)[m feat: redesign admin interface visuals
+[33m|[m[33m/[m [33m/[m  

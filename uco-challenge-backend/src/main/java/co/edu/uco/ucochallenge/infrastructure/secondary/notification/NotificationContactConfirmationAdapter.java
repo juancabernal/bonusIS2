@@ -22,7 +22,6 @@ import co.edu.uco.ucochallenge.infrastructure.secondary.persistence.jpa.entity.V
 import co.edu.uco.ucochallenge.infrastructure.secondary.persistence.jpa.repository.VerificationCodeRepository;
 
 @Component
-@Primary
 public class NotificationContactConfirmationAdapter implements ContactConfirmationPort {
 
     private static final int CODE_UPPER_BOUND = 1_000_000;
@@ -124,8 +123,8 @@ public class NotificationContactConfirmationAdapter implements ContactConfirmati
                 Map<String, Object> params = new HashMap<>();
                 params.put("verificationCode", code);
 
-                NotificationRequest req = new NotificationRequest("confirmar_datos", user)
-                        .setTemplateId("predeterminado")
+                NotificationRequest req = new NotificationRequest("confirmar_email", user)
+                        .setTemplateId("template_one")
                         .setParameters(params);
 
                 String resp = api.send(req);
