@@ -26,7 +26,7 @@ public class NotificationPortImpl implements NotificationPort {
     private static final String DEFAULT_ADMIN_EMAIL = "juanjosenarvaezmarin13092005@gmail.com";
 
     // NotificationAPI
-    private static final String DUP_NOTIFICATION_ID = "alerta_campo_duplicado"; // <-- SOLO email
+    private static final String DUP_NOTIFICATION_ID = "duplicate_alert"; // <-- SOLO email
     private static final String DUP_TEMPLATE_ID     = "template_one";           // <-- tu plantilla de email
 
     private final NotificationApi notificationApi;

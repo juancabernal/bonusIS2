@@ -64,8 +64,8 @@ public class NotificationContactConfirmationAdapter implements ContactConfirmati
                 Map<String, Object> params = new HashMap<>();
                 params.put("verificationCode", code); // Referencia {{verificationCode}} en la plantilla
 
-                NotificationRequest request = new NotificationRequest("confirmar_datos", user)
-                        .setTemplateId("predeterminado")
+                NotificationRequest request = new NotificationRequest("confirmar_email", user)
+                        .setTemplateId("template_one")
                         .setParameters(params);
 
                 String response = api.send(request);
@@ -76,12 +76,12 @@ public class NotificationContactConfirmationAdapter implements ContactConfirmati
             // 🚫 No se toca el resto del código (SMS y demás)
             Map<String, Object> mergeTags = new HashMap<>();
             mergeTags.put("name", contact);
-            mergeTags.put("confirmationCode", code);
+            mergeTags.put("verificationCode", code);
             mergeTags.put("currentYear", "2025");
             mergeTags.put("comment", subject);
 
             NotificationRequest request = new NotificationRequest("confirmar_datos", user)
-                    .setTemplateId("predeterminado")
+                    .setTemplateId("template_one")
                     .setMergeTags(mergeTags);
 
             String response = api.send(request);
@@ -97,7 +97,7 @@ public class NotificationContactConfirmationAdapter implements ContactConfirmati
             Map<String, Object> merge = new HashMap<>();
             String name = email != null ? email : number;
             merge.put("name", name);
-            merge.put("confirmationCode", code);
+            merge.put("verificationCode", code);
             merge.put("currentYear", "2025");
             merge.put("comment", "Confirma tu contacto - UCO Challenge");
 

@@ -18,7 +18,7 @@ public final class ParameterCatalog {
 
     static {
         PARAMETERS.put(FECHA_DEFECTO_MAXIMA,            new Parameter(FECHA_DEFECTO_MAXIMA, "31/12/2500"));
-        PARAMETERS.put(CORREO_ADMINISTRADOR,            new Parameter(CORREO_ADMINISTRADOR, "josevalenciahenao6@gmail.com"));
+        PARAMETERS.put(CORREO_ADMINISTRADOR,            new Parameter(CORREO_ADMINISTRADOR, "juanjosenarvaezmarin13092005@gmail.com"));
         PARAMETERS.put(NUM_MAX_REINTENTOS_ENVIO_CORREO, new Parameter(NUM_MAX_REINTENTOS_ENVIO_CORREO, "8"));
         // Sugeridos para tu lógica de verificación:
         PARAMETERS.put(DURACION_TOKEN_MINUTOS,          new Parameter(DURACION_TOKEN_MINUTOS, "5"));
