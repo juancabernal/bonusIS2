@@ -39,7 +39,7 @@ const Home = () => {
       <section className={styles.hero}>
         <div className={styles.heroHeading}>
           <span className={styles.heroBadge}>
-            👋 {isAuthenticated ? `Hola, ${displayName}` : 'Bienvenido a la consola'}
+             {isAuthenticated ? `Hola, ${displayName}` : 'Bienvenido'}
           </span>
           <h1 className={styles.heroTitle}>UCO Challenge Admin Console</h1>
           <p className={styles.heroSubtitle}>
@@ -72,10 +72,9 @@ const Home = () => {
 
         <aside className={styles.heroPanel}>
           <div>
-            <h3>Universidad Cooperativa de Colombia</h3>
+            <h3>Universidad Católica de Oriente</h3>
             <p>
-              Administración centralizada del ecosistema UCO: usuarios, catálogos, ubicaciones y
-              validaciones conectadas al API Gateway.
+              Administración centralizada del ecosistema UCO: Registro y catálogo de usuarios.
             </p>
           </div>
           <div className={styles.heroMeta}>

@@ -1,0 +1,87 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: uco-challenge-apigateway
+
+  cloud:
+    gateway:
+      # =======================
+      # RUTAS DEL GATEWAY
+      # =======================
+      routes:
+        - id: backend-api
+          uri: http://localhost:8083   # BACKEND local
+          predicates:
+            - Path=/api/**
+          filters:
+            - RewritePath=/api/(?<segment>.*),/uco-challenge/api/v1/${segment}
+
+      # =======================
+      # CORS GLOBAL
+      # =======================
+      globalcors:
+        corsConfigurations:
+          "[/**]":
+            allowedOrigins:
+              - http://localhost:5173
+              - http://localhost:3000
+              - http://localhost:4200
+            allowedMethods:
+              - GET
+              - POST
+              - PATCH
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+            allowedHeaders:
+              - Authorization
+              - Content-Type
+              - X-Requested-With
+              - Accept
+              - Origin
+            exposedHeaders:
+              - Authorization
+              - X-Get-Header
+            allowCredentials: true
+        add-to-simple-url-handler-mapping: true
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials Access-Control-Allow-Headers Access-Control-Allow-Methods RETAIN_UNIQUE
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://dev-qyb588fnz01iw3kn.us.auth0.com/
+
+auth0:
+  audience: https://uco-challenge-api
+
+web:
+  cors:
+    allowed-origins: http://localhost:5173,http://localhost:3000,http://localhost:4200
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+gateway:
+  hmac:
+    signature: 4F39B2E91A8D44C2B28C937A7F84E72F
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty.http.client: INFO
+    org.springframework.web.cors: DEBUG

@@ -8,9 +8,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.Test;
 
-import co.edu.uco.ucochallenge.crosscuting.notification.Notification;
-import co.edu.uco.ucochallenge.user.registeruser.application.usecase.domain.ExistingUserSnapshotDomain;
-import co.edu.uco.ucochallenge.user.registeruser.application.usecase.domain.RegisterUserDomain;
+import co.edu.uco.ucochallenge.domain.common.notification.Notification;
+import co.edu.uco.ucochallenge.domain.user.register.model.ExistingUserSnapshotDomain;
+import co.edu.uco.ucochallenge.domain.user.register.model.RegisterUserDomain;
+import co.edu.uco.ucochallenge.domain.user.register.specification.UniqueEmailSpecification;
 
 class UniqueEmailSpecificationTest {
 

@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import co.edu.uco.ucochallenge.domain.specification.Specification;
+import co.edu.uco.ucochallenge.domain.common.specification.Specification;
 
 class SpecificationCompositionTest {
 

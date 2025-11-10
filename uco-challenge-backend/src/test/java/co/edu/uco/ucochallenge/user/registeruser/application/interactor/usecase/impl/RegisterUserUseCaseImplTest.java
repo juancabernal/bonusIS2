@@ -10,18 +10,19 @@ import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
-import org.mockito.Mock;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import co.edu.uco.ucochallenge.crosscuting.exception.DomainValidationException;
-import co.edu.uco.ucochallenge.crosscuting.helper.UUIDHelper;
-import co.edu.uco.ucochallenge.user.registeruser.application.port.ContactConfirmationPort;
-import co.edu.uco.ucochallenge.user.registeruser.application.port.IdTypeQueryPort;
-import co.edu.uco.ucochallenge.user.registeruser.application.port.LocationQueryPort;
-import co.edu.uco.ucochallenge.user.registeruser.application.port.NotificationPort;
-import co.edu.uco.ucochallenge.user.registeruser.application.port.RegisterUserRepositoryPort;
-import co.edu.uco.ucochallenge.user.registeruser.application.usecase.domain.RegisterUserDomain;
+import co.edu.uco.ucochallenge.application.user.register.usecase.impl.RegisterUserUseCaseImpl;
+import co.edu.uco.ucochallenge.crosscutting.exception.DomainValidationException;
+import co.edu.uco.ucochallenge.crosscutting.helper.UUIDHelper;
+import co.edu.uco.ucochallenge.domain.user.port.ContactConfirmationPort;
+import co.edu.uco.ucochallenge.domain.user.port.IdTypeQueryPort;
+import co.edu.uco.ucochallenge.domain.user.port.LocationQueryPort;
+import co.edu.uco.ucochallenge.domain.user.port.NotificationPort;
+import co.edu.uco.ucochallenge.domain.user.port.RegisterUserRepositoryPort;
+import co.edu.uco.ucochallenge.domain.user.register.model.RegisterUserDomain;
 
 @ExtendWith(MockitoExtension.class)
 class RegisterUserUseCaseImplTest {

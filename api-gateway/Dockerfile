@@ -1,14 +1,23 @@
-# Usa una imagen oficial de OpenJDK 21 como base
+# Usa OpenJDK 21 como base
 FROM openjdk:21-jdk-slim
 
-# Establecer un directorio de trabajo dentro del contenedor
+# Directorio de trabajo
 WORKDIR /app
 
-# Copiar el archivo JAR desde el directorio target al contenedor
-COPY target/uco-challenge-apigateway-0.0.1-SNAPSHOT.jar /app/uco-challenge-apigateway.jar
+# Copia el jar que se construye con Maven. Cambia el nombre según cada módulo
+COPY target/uco-challenge-apigateway 0.0.1-SNAPSHOT.jar /app/app.jar
 
-# Exponer el puerto 8082, que es el puerto donde está corriendo tu API Gateway
+# Copia el agente OTel descargado previamente
+COPY opentelemetry-javaagent.jar /app/
+
+# Configura la variable JAVA_TOOL_OPTIONS para usar el agente (esto es lo que indica la documentación oficial:contentReference[oaicite:1]{index=1})
+ENV JAVA_TOOL_OPTIONS="-javaagent:/app/opentelemetry-javaagent.jar"
+
+# Configura el endpoint de exportación OTLP (hacia el colector) si usas docker-compose
+ENV OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+
+# Expón el puerto interno (cambia según cada servicio)
 EXPOSE 8082
 
-# Comando para ejecutar la aplicación dentro del contenedor
-ENTRYPOINT ["java", "-jar", "uco-challenge-apigateway.jar"]
+# Ejecuta la aplicación
+ENTRYPOINT ["sh","-c","java $JAVA_TOOL_OPTIONS -jar /app/app.jar"]
