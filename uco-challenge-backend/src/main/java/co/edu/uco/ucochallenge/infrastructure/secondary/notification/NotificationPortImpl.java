@@ -1,6 +1,8 @@
 package co.edu.uco.ucochallenge.infrastructure.secondary.notification;
 
 import java.time.Year;
+import com.notificationapi.model.SmsOptions;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,9 +27,16 @@ public class NotificationPortImpl implements NotificationPort {
     // Fallback si no está configurado en parámetros
     private static final String DEFAULT_ADMIN_EMAIL = "juanjosenarvaezmarin13092005@gmail.com";
 
-    // NotificationAPI
-    private static final String DUP_NOTIFICATION_ID = "duplicate_alert"; // <-- SOLO email
-    private static final String DUP_TEMPLATE_ID     = "template_one";           // <-- tu plantilla de email
+    // Notificación para avisos al usuario (correo)
+    private static final String DUP_NOTIFICATION_ID = "duplicate_alert";
+    private static final String DUP_TEMPLATE_ID     = "template_one";
+
+    // Notificación para avisos al usuario (SMS)
+    private static final String DUP_SMS_NOTIFICATION_ID = "duplicado_sms";
+
+    // ✅ NUEVO: Notificación exclusiva para el administrador
+    private static final String DUP_ADMIN_NOTIFICATION_ID = "duplicado_aviso_admin";
+    private static final String ADMIN_TEMPLATE_ID          = "template_one"; // usa tu plantilla
 
     private final NotificationApi notificationApi;
     private final ParametersCatalogCache parametersCatalogCache;
@@ -53,13 +62,12 @@ public class NotificationPortImpl implements NotificationPort {
         return String.valueOf(Year.now().getValue());
     }
 
-    // ---------- Builders (Email-only con PARAMETERS) ----------
-
+    // ---------- Builders (Email-only con PARAMETERS para el usuario) ----------
     private static Map<String, Object> duplicateParams(String subject, String message) {
         Map<String, Object> p = new HashMap<>();
-        p.put("subject", subject);          // Úsalo en el Subject de la plantilla si quieres: {{subject}}
-        p.put("message", message);          // Cuerpo del correo: {{message}}
-        p.put("currentYear", currentYear()); // Footer: {{currentYear}}
+        p.put("subject", subject);
+        p.put("message", message);
+        p.put("currentYear", currentYear());
         return p;
     }
 
@@ -72,12 +80,25 @@ public class NotificationPortImpl implements NotificationPort {
                 .setParameters(duplicateParams(subject, message));
     }
 
-    private NotificationRequest buildAdminDuplicateEmail(final String adminEmail,
-                                                         final String message) {
-        final User user = new User(adminEmail).setEmail(adminEmail);
-        return new NotificationRequest(DUP_NOTIFICATION_ID, user)
+    private NotificationRequest buildDuplicateSms(final String toMobile, final String message) {
+        final String e164 = normalizeToE164(toMobile);
+        final User user = new User(e164).setNumber(e164);
+        return new NotificationRequest(DUP_SMS_NOTIFICATION_ID, user)
                 .setTemplateId(DUP_TEMPLATE_ID)
-                .setParameters(duplicateParams("UCO Challenge - Alerta de duplicado", message));
+                .setSms(new SmsOptions().setMessage(message));
+    }
+
+    // ✅ NUEVO: Builder para el correo del ADMIN con solo duplicatedValue y channel
+    private NotificationRequest buildAdminDuplicateAlertEmail(final String adminEmail,
+                                                              final String duplicatedValue,
+                                                              final String channel) {
+        final User user = new User(adminEmail).setEmail(adminEmail);
+        Map<String, Object> params = new HashMap<>();
+        params.put("duplicatedValue", duplicatedValue); // {{duplicatedValue}}
+        params.put("channel", channel);                 // {{channel}} -> "email" | "sms"
+        return new NotificationRequest(DUP_ADMIN_NOTIFICATION_ID, user)
+                .setTemplateId(ADMIN_TEMPLATE_ID)
+                .setParameters(params);
     }
 
     private void trySend(final NotificationRequest request, final String context) {
@@ -88,20 +109,21 @@ public class NotificationPortImpl implements NotificationPort {
         }
     }
 
-    // ========== Implementación del puerto (solo email) ==========
-
+    // ========== Implementación del puerto ==========
     @Override
     public void notifyAdministrator(final String message) {
+        // Compatibilidad: usa la nueva notificación del admin.
         final String admin = resolveAdminEmail();
-        trySend(buildAdminDuplicateEmail(admin, message), "notifyAdministrator");
+        trySend(buildAdminDuplicateAlertEmail(admin, message, "desconocido"), "notifyAdministrator");
     }
 
     @Override
     public void notifyExecutor(final String executorIdentifier, final String message) {
-        // "executor" puede ser email del usuario que intenta registrar. Si no parece email -> solo admin.
+        // Mantenemos el comportamiento existente (no requerido por tu cambio actual)
         if (executorIdentifier == null || !executorIdentifier.contains("@")) {
             final String admin = resolveAdminEmail();
-            trySend(buildAdminDuplicateEmail(admin, "Executor no-email: " + executorIdentifier + ". " + message),
+            // Usamos la nueva notificación también aquí para consistencia.
+            trySend(buildAdminDuplicateAlertEmail(admin, String.valueOf(executorIdentifier), "desconocido"),
                     "notifyExecutor(admin)");
             return;
         }
@@ -111,16 +133,43 @@ public class NotificationPortImpl implements NotificationPort {
 
     @Override
     public void notifyEmailOwner(final String email, final String message) {
+        // Correo al dueño (sin cambios)
         final String subject = "UCO Challenge - Intento con correo ya registrado";
         trySend(buildDuplicateEmail(email, subject, message), "notifyEmailOwner");
+
+        // ✅ Aviso al ADMIN con valor duplicado y canal = email
+        final String admin = resolveAdminEmail();
+        trySend(buildAdminDuplicateAlertEmail(admin, email, "email"), "notifyEmailOwner.admin");
     }
 
     @Override
     public void notifyMobileOwner(final String mobileNumber, final String message) {
-        // No SMS: avisamos al admin por email incluyendo el número
+        // SMS al dueño (sin cambios)
+        trySend(buildDuplicateSms(mobileNumber, message), "notifyMobileOwner.sms");
+
+        // ✅ Aviso al ADMIN con valor duplicado y canal = sms
         final String admin = resolveAdminEmail();
-        final String body = "Se intentó registrar el móvil ya existente: " + String.valueOf(mobileNumber)
-                + ". " + message;
-        trySend(buildAdminDuplicateEmail(admin, body), "notifyMobileOwner(adminOnly)");
+        final String e164 = normalizeToE164(mobileNumber);
+        trySend(buildAdminDuplicateAlertEmail(admin, e164, "sms"), "notifyMobileOwner.admin");
+    }
+
+    // --- helper E.164 ---
+    private String normalizeToE164(String raw) {
+        if (raw == null) return null;
+        String digits = raw.replaceAll("\\D", ""); // deja solo números
+
+        // +57XXXXXXXXXX (12 dígitos) -> OK
+        if (digits.startsWith("57") && digits.length() == 12) {
+            return "+" + digits;
+        }
+        // 3XXXXXXXXX (10 dígitos móviles en CO) -> anteponer +57
+        if (digits.length() == 10 && digits.startsWith("3")) {
+            return "+57" + digits;
+        }
+        // si ya viene con + al inicio, regrésalo tal cual
+        if (raw.startsWith("+")) return raw;
+
+        // fallback: agrega + al inicio
+        return "+" + digits;
     }
 }
