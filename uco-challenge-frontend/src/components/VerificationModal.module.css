@@ -1,8 +1,10 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(4, 6, 15, 0.72);
-  backdrop-filter: blur(14px) saturate(140%);
+  background: radial-gradient(circle at 20% 20%, rgba(118, 186, 255, 0.12), transparent 60%),
+    radial-gradient(circle at 80% 80%, rgba(104, 150, 255, 0.15), transparent 65%),
+    rgba(4, 6, 15, 0.82);
+  backdrop-filter: blur(18px) saturate(150%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -12,14 +14,24 @@
 
 .container {
   width: min(420px, 100%);
-  background: rgba(11, 14, 24, 0.95);
+  background: linear-gradient(135deg, rgba(12, 18, 42, 0.95), rgba(6, 10, 28, 0.92));
   border-radius: var(--radius-lg);
-  padding: clamp(1.8rem, 4vw, 2.3rem);
-  border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-soft);
+  padding: clamp(2rem, 4vw, 2.5rem);
+  border: 1px solid rgba(132, 168, 255, 0.32);
+  box-shadow: 0 40px 110px rgba(6, 10, 34, 0.55);
   display: grid;
   gap: 1.2rem;
   text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+
+.container::after {
+  content: '';
+  position: absolute;
+  inset: 40% -30% -40% 35%;
+  background: radial-gradient(circle at 30% 40%, rgba(118, 186, 255, 0.25), transparent 60%);
+  pointer-events: none;
 }
 
 .title {
@@ -29,15 +41,15 @@
 
 .text {
   margin: 0;
-  color: var(--color-text-muted);
+  color: rgba(202, 214, 255, 0.68);
 }
 
 .input {
   width: 100%;
   padding: 0.8rem 1rem;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--color-border);
-  background: rgba(8, 11, 20, 0.9);
+  border: 1px solid rgba(132, 168, 255, 0.32);
+  background: rgba(8, 12, 30, 0.85);
   color: var(--color-text-primary);
   text-align: center;
   letter-spacing: 0.6em;
@@ -46,8 +58,8 @@
 }
 
 .input:focus {
-  border-color: rgba(108, 99, 255, 0.5);
-  box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
+  border-color: rgba(118, 186, 255, 0.6);
+  box-shadow: 0 0 0 4px rgba(118, 186, 255, 0.2);
 }
 
 .actions {
