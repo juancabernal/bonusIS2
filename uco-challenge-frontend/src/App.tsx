@@ -56,15 +56,15 @@ function DebugTokenButton() {
       onClick={handleClick}
       style={{
         position: 'fixed',
-        bottom: 20,
-        right: 20,
-        background: 'rgba(108, 99, 255, 0.16)',
+        bottom: 24,
+        right: 28,
+        background: 'rgba(90, 84, 255, 0.18)',
         color: 'var(--color-text-primary)',
-        padding: '0.6rem 1.1rem',
-        border: '1px solid rgba(108, 99, 255, 0.4)',
-        borderRadius: '12px',
-        boxShadow: '0 18px 40px rgba(3, 5, 12, 0.4)',
-        backdropFilter: 'blur(8px)',
+        padding: '0.7rem 1.2rem',
+        border: '1px solid rgba(90, 84, 255, 0.32)',
+        borderRadius: '14px',
+        boxShadow: '0 24px 40px rgba(20, 33, 61, 0.18)',
+        backdropFilter: 'blur(10px)',
         fontWeight: 600,
         cursor: 'pointer',
         zIndex: 1000,
@@ -104,71 +104,92 @@ const App = () => {
   return (
     <ErrorBoundary>
       <div className="app-shell">
-        <header className="shell-header">
-          <div className="shell-header__group">
-            <NavLink to="/" className="shell-header__brand" aria-label="Ir al inicio de UCO Challenge">
-              <span className="shell-header__brand-mark" aria-hidden />
-              <span>UCO Control</span>
-            </NavLink>
-
-            <nav className="shell-header__nav" aria-label="Navegación principal">
-              <NavLink to="/" className={({ isActive }) => `shell-header__nav-link${isActive ? ' is-active' : ''}`}>
-                Inicio
-              </NavLink>
-              <NavLink
-                to="/dashboard"
-                className={({ isActive }) => `shell-header__nav-link${isActive ? ' is-active' : ''}`}
-              >
-                Panel
-              </NavLink>
-              <NavLink
-                to="/users"
-                className={({ isActive }) => `shell-header__nav-link${isActive ? ' is-active' : ''}`}
-              >
-                Usuarios
-              </NavLink>
-            </nav>
-          </div>
-
-          {isAuthenticated ? (
-            <div className="shell-user" aria-live="polite">
-              <span className="shell-user__avatar" aria-hidden>
-                {avatarLetter}
-              </span>
-              <span className="shell-user__name">{user?.name ?? user?.email}</span>
-              <button
-                onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
-                className="button button--ghost"
-                type="button"
-              >
-                Cerrar sesión
-              </button>
+        <aside className="shell-sidebar">
+          <NavLink to="/" className="shell-sidebar__brand" aria-label="Ir al inicio de UCO Challenge">
+            <span className="shell-sidebar__brand-mark" aria-hidden />
+            <div className="shell-sidebar__brand-text">
+              <span>UCO</span>
+              <strong>Control</strong>
             </div>
-          ) : (
-            <span className="shell-guest">Invitado</span>
-          )}
-        </header>
+          </NavLink>
 
-        <main className="shell-main">
-          <AppRouter />
-        </main>
+          <nav className="shell-sidebar__nav" aria-label="Navegación principal">
+            <NavLink to="/" className={({ isActive }) => `shell-sidebar__link${isActive ? ' is-active' : ''}`}>
+              <span aria-hidden>🏠</span>
+              <span>Inicio</span>
+            </NavLink>
+            <NavLink to="/dashboard" className={({ isActive }) => `shell-sidebar__link${isActive ? ' is-active' : ''}`}>
+              <span aria-hidden>📊</span>
+              <span>Panel</span>
+            </NavLink>
+            <NavLink to="/users" className={({ isActive }) => `shell-sidebar__link${isActive ? ' is-active' : ''}`}>
+              <span aria-hidden>👥</span>
+              <span>Usuarios</span>
+            </NavLink>
+          </nav>
 
-        <footer className="shell-footer">
-          <p>
-            © {new Date().getFullYear()} Operación UCO. Plataforma segura gestionada con Auth0 y
-            microservicios.
-          </p>
-        </footer>
+          <div className="shell-sidebar__info">
+            <span className="shell-sidebar__info-badge">Operación en vivo</span>
+            <p>
+              Gateway, Auth0 y microservicios coordinados para la Universidad Cooperativa de Colombia.
+            </p>
+          </div>
+        </aside>
 
-        <ToastContainer
-          position="top-right"
-          autoClose={3200}
-          newestOnTop
-          closeOnClick
-          pauseOnHover
-          theme="dark"
-        />
+        <div className="shell-content">
+          <header className="shell-topbar">
+            <div className="shell-topbar__intro">
+              <h1>Centro de control UCO</h1>
+              <p>Gestiona usuarios y verificaciones desde una vista única.</p>
+            </div>
+
+            {isAuthenticated ? (
+              <div className="shell-user" aria-live="polite">
+                <span className="shell-user__avatar" aria-hidden>
+                  {avatarLetter}
+                </span>
+                <div className="shell-user__details">
+                  <span className="shell-user__label">Sesión activa</span>
+                  <span className="shell-user__name">{user?.name ?? user?.email}</span>
+                </div>
+                <button
+                  onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
+                  className="button button--ghost"
+                  type="button"
+                >
+                  Cerrar sesión
+                </button>
+              </div>
+            ) : (
+              <div className="shell-guest" aria-live="polite">
+                <span>Sesión no iniciada</span>
+                <span>Accede para operar el panel seguro.</span>
+              </div>
+            )}
+          </header>
+
+          <main className="shell-main">
+            <div className="shell-main__inner">
+              <AppRouter />
+            </div>
+          </main>
+
+          <footer className="shell-footer">
+            <p>
+              © {new Date().getFullYear()} Operación UCO. Plataforma segura gestionada con Auth0 y microservicios.
+            </p>
+          </footer>
+        </div>
       </div>
+
+      <ToastContainer
+        position="bottom-left"
+        autoClose={3200}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        theme="light"
+      />
 
       {/* Botón de debug para obtener token manualmente */}
       <DebugTokenButton />

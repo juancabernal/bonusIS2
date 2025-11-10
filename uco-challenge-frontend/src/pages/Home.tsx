@@ -37,7 +37,7 @@ const Home = () => {
   return (
     <main className={`page ${styles.home}`}>
       <section className={styles.hero}>
-        <div className={styles.heroHeading}>
+        <div className={styles.heroContent}>
           <span className={styles.heroBadge}>
             👋 {isAuthenticated ? `Hola, ${displayName}` : 'Bienvenido a la consola'}
           </span>
@@ -71,16 +71,20 @@ const Home = () => {
         </div>
 
         <aside className={styles.heroPanel}>
-          <div>
+          <div className={styles.heroPanelCard}>
             <h3>Universidad Cooperativa de Colombia</h3>
             <p>
               Administración centralizada del ecosistema UCO: usuarios, catálogos, ubicaciones y
               validaciones conectadas al API Gateway.
             </p>
           </div>
-          <div className={styles.heroMeta}>
-            <span>Operación en curso</span>
-            <span>API Gateway · Auth0 · Microservicios</span>
+          <div className={styles.heroProgress}>
+            <h4>Cadena operativa</h4>
+            <ul>
+              <li>Autenticación segura con Auth0 y scopes dedicados.</li>
+              <li>Gateway gestionando microservicios y catálogos institucionales.</li>
+              <li>Verificaciones con códigos OTP y seguimiento inmediato.</li>
+            </ul>
           </div>
         </aside>
       </section>

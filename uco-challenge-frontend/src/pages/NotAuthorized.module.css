@@ -1,26 +1,28 @@
 .page {
   display: grid;
   place-items: center;
-  padding: clamp(2rem, 5vw, 3.5rem);
+  padding: clamp(2.4rem, 6vw, 4rem);
 }
 
 .card {
-  max-width: 480px;
+  max-width: 520px;
   display: grid;
-  gap: 1.4rem;
-  padding: clamp(1.8rem, 4vw, 2.3rem);
+  gap: 1.6rem;
+  padding: clamp(2rem, 5vw, 2.5rem);
   border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
-  background: rgba(11, 14, 24, 0.92);
-  box-shadow: var(--shadow-soft);
+  border: 1px solid rgba(240, 68, 82, 0.22);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 36px 72px rgba(240, 68, 82, 0.22);
   text-align: center;
 }
 
 .icon {
-  font-size: 2.2rem;
+  font-size: 2.6rem;
 }
 
 .actions {
   display: flex;
   justify-content: center;
+  gap: 0.9rem;
+  flex-wrap: wrap;
 }
