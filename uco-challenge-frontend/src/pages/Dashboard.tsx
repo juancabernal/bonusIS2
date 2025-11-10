@@ -10,18 +10,20 @@ const Dashboard = () => {
   return (
     <main className={`page ${styles.dashboard}`}>
       <header className={styles.header}>
-        <div className={styles.headerText}>
-          <h1>Panel operativo</h1>
-          <p>
-            Supervisa la actividad del ecosistema UCO y accede a las acciones clave para mantener datos y
-            verificaciones alineadas.
-          </p>
-        </div>
-        <div className={styles.headerActions}>
-          <Link to="/users/new" className="button button--primary">
-            Registrar usuario
-          </Link>
-          <LogoutButton className="button button--ghost" />
+        <div className={styles.headerTop}>
+          <div className={styles.headerText}>
+            <h1>Panel operativo</h1>
+            <p>
+              Supervisa la actividad del ecosistema UCO y accede a las acciones clave para mantener datos y
+              verificaciones alineadas.
+            </p>
+          </div>
+          <div className={styles.headerActions}>
+            <Link to="/users/new" className="button button--primary">
+              Registrar usuario
+            </Link>
+            <LogoutButton className="button button--ghost" />
+          </div>
         </div>
       </header>
 
