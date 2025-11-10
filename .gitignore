@@ -9,4 +9,5 @@
 **/.project
 **/.settings/
 **/.mvn/wrapper/maven-wrapper.jar
-**/.node_modules/
+node_modules/
+**/node_modules/
