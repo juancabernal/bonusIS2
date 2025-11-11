@@ -8,25 +8,25 @@ const featureCards = [
     title: 'Supervisión inmediata',
     description:
       'Consulta usuarios, catálogos y verificaciones en una sola vista sin sacrificar velocidad.',
-    icon: '🧭',
+    icon: '',
   },
   {
     title: 'Seguridad Auth0',
     description:
       'Sesiones protegidas, scopes controlados y tokens gestionados automáticamente por el gateway.',
-    icon: '🔒',
+    icon: '',
   },
   {
     title: 'Flujos de validación',
     description:
       'Envía códigos OTP y confirma contactos con retroalimentación inmediata para cada usuario.',
-    icon: '📡',
+    icon: '',
   },
   {
     title: 'Catálogos oficiales',
     description:
       'Documentos y ubicaciones actualizadas directamente desde los microservicios institucionales.',
-    icon: '🗂️',
+    icon: '',
   },
 ]
 
