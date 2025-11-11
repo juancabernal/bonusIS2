@@ -1,0 +1,13 @@
+# Etapa de construcción
+FROM maven:3.9-jdk-21 AS builder
+WORKDIR /app
+COPY . /app
+# Compila el proyecto y genera el jar; se omiten tests para agilizar la imagen
+RUN mvn -B clean package -DskipTests
+
+# Etapa de ejecución
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+COPY --from=builder /app/target/*.jar app.jar
+EXPOSE 8083
+ENTRYPOINT ["java","-jar","/app/app.jar"]

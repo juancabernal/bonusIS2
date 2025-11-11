@@ -62,6 +62,16 @@
   box-shadow: 0 0 0 4px rgba(118, 186, 255, 0.2);
 }
 
+/* Añadimos estilos cuando el input tiene aria-invalid="true" para
+   resaltar visualmente los casos de código erróneo. Esto es un cambio
+   puramente visual que no modifica la lógica de validación ni de envío.
+   El borde y un ligero resplandor rojizo ayudan a que el usuario
+   identifique de inmediato que hay un error. */
+.input[aria-invalid="true"] {
+  border-color: rgba(255, 126, 137, 0.8);
+  box-shadow: 0 0 0 3px rgba(255, 126, 137, 0.3);
+}
+
 .actions {
   display: flex;
   justify-content: flex-end;

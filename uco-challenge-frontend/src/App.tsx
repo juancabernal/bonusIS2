@@ -123,7 +123,7 @@ const App = () => {
             </NavLink>
 
             <nav className="shell-menu">
-              <NavLink to="/" className={({ isActive }) => `shell-menu__item${isActive ? ' is-active' : ''}`}>
+              <NavLink to="/" className={({ isActive }) => `shell-menu__item${isActive ? ' is-active' : ''}`}> 
                 <span className="shell-menu__indicator" aria-hidden />
                 <span>Inicio</span>
               </NavLink>
@@ -194,18 +194,35 @@ const App = () => {
           </div>
         </div>
 
-        <ToastContainer
-          position="top-center"
-          autoClose={3200}
-          newestOnTop
-          closeOnClick
-          pauseOnHover
-          theme="dark"
-          toastClassName={() => 'toast-shell'}
-          bodyClassName={() => 'toast-shell__body'}
-          progressClassName="toast-shell__progress"
-        />
       </div>
+
+      {/*
+        Mueve el contenedor de toasts fuera de la shell principal para evitar que
+        quede por detrás de modales o elementos con stacking context aislado
+        (como .app-shell que usa isolation).  Al estar a nivel de raíz y con
+        z-index elevado, los mensajes de error o éxito se mostrarán siempre
+        por encima de los diálogos y el usuario no tendrá que cerrar el modal
+        para verlos.
+      */}
+      <ToastContainer
+        position="top-center"
+        autoClose={3200}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        theme="dark"
+        toastClassName={() => 'toast-shell'}
+        bodyClassName={() => 'toast-shell__body'}
+        progressClassName="toast-shell__progress"
+        /*
+          Establecemos un z-index alto para que el contenedor de toasts
+          supere el z-index del overlay de verificación (1000) y de cualquier
+          otro modal.  De este modo los toasts se renderizan por encima de
+          los cuadros flotantes.  No afecta la lógica ni el comportamiento
+          funcional, solo la superposición visual.
+        */
+        style={{ zIndex: 2000 }}
+      />
 
       {/* Botón de debug para obtener token manualmente */}
       <DebugTokenButton />
